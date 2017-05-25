@@ -80,4 +80,20 @@ interface StatusInterface extends ContentEntityInterface, EntityChangedInterface
    */
   public function setPublished($published);
 
+  public function setMessage($message);
+
+  public function getMessage();
+
+//  public function setSender($sender);
+//
+//  public function getSender();
+
+  public function setRecipient($recipient);
+
+  public function getRecipient();
+
+  public function setEntityTarget($entityTarget);
+
+  public function getEntityTarget();
+
 }

@@ -42,7 +42,7 @@ use Drupal\user\UserInterface;
  *     "bundle" = "type",
  *     "label" = "name",
  *     "uuid" = "uuid",
- *     "uid" = "user_id",
+ *     "uid" = "uid",
  *     "langcode" = "langcode",
  *     "status" = "status",
  *   },
@@ -169,7 +169,7 @@ class Status extends ContentEntityBase implements StatusInterface {
       ->setDescription(t('The UUID of the Status entity.'))
       ->setReadOnly(TRUE);
 
-    $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+    $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Authored by'))
       ->setDescription(t('The user ID of author of the Status entity.'))
       ->setRevisionable(TRUE)
@@ -195,6 +195,39 @@ class Status extends ContentEntityBase implements StatusInterface {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    $fields['recipient'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Received by'))
+      ->setDescription(t('The user ID of recipient of the Status entity.'))
+      ->setRevisionable(TRUE)
+      ->setSetting('target_type', 'user')
+      ->setSetting('handler', 'default')
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('view', array(
+        'label' => 'hidden',
+        'type' => 'author',
+        'weight' => 0,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 5,
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'autocomplete_type' => 'tags',
+          'placeholder' => '',
+        ),
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+
+    $fields['entity_target'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Node'))
+      ->setDescription(t('The content associated with this Status message'))
+      ->setSetting('target_type', 'node')
+      ->setSetting('handler', 'default')
+      ->setRevisionable(TRUE);
+
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDescription(t('The name of the Status entity.'))
@@ -214,6 +247,11 @@ class Status extends ContentEntityBase implements StatusInterface {
       ))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
+
+    $fields['message'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Message'))
+      ->setDescription(t('The message of the Status entity.'))
+      ->setRevisionable(TRUE);
 
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Publishing status'))
@@ -240,4 +278,35 @@ class Status extends ContentEntityBase implements StatusInterface {
     return $fields;
   }
 
+  public function setMessage($message) {
+    $this->set('message', $message);
+  }
+
+  public function getMessage() {
+    return $this->get('message');
+  }
+
+//  public function setSender($sender) {
+//    $this->set('sender', $sender);
+//  }
+//
+//  public function getSender() {
+//    return $this->get('sender');
+//  }
+
+  public function setRecipient($recipient) {
+    $this->set('recipient', $recipient);
+  }
+
+  public function getRecipient() {
+    return $this->get('recipient');
+  }
+
+  public function setEntityTarget($entityTarget) {
+    $this->set('entity_target', $entityTarget);
+  }
+
+  public function getEntityTarget() {
+    return $this->get('entity_target');
+  }
 }

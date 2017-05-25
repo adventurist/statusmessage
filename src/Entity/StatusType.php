@@ -54,4 +54,55 @@ class StatusType extends ConfigEntityBundleBase implements StatusTypeInterface {
    */
   protected $label;
 
+
+  /**
+   * Boolean value to determine whether this type contains media
+   *
+   * @var
+   */
+  protected $media;
+
+
+  /**
+   * Mime type for media, if present
+   *
+   * @var
+   */
+  protected $mime;
+
+
+  /**
+   * @param $bool
+   */
+
+  public function setMedia($bool) {
+    $this->set('media', $bool);
+  }
+
+
+  /**
+   * @return mixed|null
+   */
+
+  public function getMedia() {
+    return $this->get('media');
+  }
+
+
+  /**
+   * @param $mime
+   */
+
+  public function setMime($mime) {
+    $this->set('mime', $mime);
+  }
+
+
+  /**
+   * @return mixed|null
+   */
+
+  public function getMime() {
+    return $this->get('mime');
+  }
 }

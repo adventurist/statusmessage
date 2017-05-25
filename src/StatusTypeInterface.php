@@ -9,4 +9,13 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface StatusTypeInterface extends ConfigEntityInterface {
   // Add get/set methods for your configuration properties here.
+
+  public function setMedia($bool);
+
+  public function getMedia();
+
+  public function setMime($mime);
+
+  public function getMime();
+
 }

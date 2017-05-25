@@ -8,5 +8,11 @@ statusmessage.status_type.*:
     label:
       type: label
       label: 'Label'
+    media:
+      type: boolean
+      label: 'media'
+    mime:
+      type: string
+      label: 'mime'
     uuid:
       type: string
