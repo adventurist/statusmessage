@@ -6,8 +6,11 @@ entity.status.collection:
   parent: system.admin_structure
   weight: 100
 
-status.admin.structure.settings:
-  title: Status settings
-  description: 'Configure Status entities'
-  route_name: status.settings
+# Status type menu items definition
+entity.status_type.collection:
+  title: 'Status type'
+  route_name: entity.status_type.collection
+  description: 'List Status type (bundles)'
   parent: system.admin_structure
+  weight: 99
+

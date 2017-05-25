@@ -1,5 +1,5 @@
 name: StatusMessage
 type: module
-description: Status Messages on a User Profile Timeline
+description: Status Messages for Users
 core: 8.x
 package: StatusMessage

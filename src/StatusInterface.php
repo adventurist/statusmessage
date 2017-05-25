@@ -14,6 +14,14 @@ use Drupal\user\EntityOwnerInterface;
 interface StatusInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
   // Add get/set methods for your configuration properties here.
   /**
+   * Gets the Status type.
+   *
+   * @return string
+   *   The Status type.
+   */
+  public function getType();
+
+  /**
    * Gets the Status name.
    *
    * @return string

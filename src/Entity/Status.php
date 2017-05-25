@@ -18,6 +18,7 @@ use Drupal\user\UserInterface;
  * @ContentEntityType(
  *   id = "status",
  *   label = @Translation("Status"),
+ *   bundle_label = @Translation("Status type"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\statusmessage\StatusListBuilder",
@@ -38,6 +39,7 @@ use Drupal\user\UserInterface;
  *   admin_permission = "administer status entities",
  *   entity_keys = {
  *     "id" = "id",
+ *     "bundle" = "type",
  *     "label" = "name",
  *     "uuid" = "uuid",
  *     "uid" = "user_id",
@@ -46,12 +48,13 @@ use Drupal\user\UserInterface;
  *   },
  *   links = {
  *     "canonical" = "/admin/structure/status/{status}",
- *     "add-form" = "/admin/structure/status/add",
+ *     "add-form" = "/admin/structure/status/add/{status_type}",
  *     "edit-form" = "/admin/structure/status/{status}/edit",
  *     "delete-form" = "/admin/structure/status/{status}/delete",
  *     "collection" = "/admin/structure/status",
  *   },
- *   field_ui_base_route = "status.settings"
+ *   bundle_entity_type = "status_type",
+ *   field_ui_base_route = "entity.status_type.edit_form"
  * )
  */
 class Status extends ContentEntityBase implements StatusInterface {
@@ -64,6 +67,13 @@ class Status extends ContentEntityBase implements StatusInterface {
     $values += array(
       'user_id' => \Drupal::currentUser()->id(),
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getType() {
+    return $this->bundle();
   }
 
   /**
@@ -149,6 +159,11 @@ class Status extends ContentEntityBase implements StatusInterface {
       ->setLabel(t('ID'))
       ->setDescription(t('The ID of the Status entity.'))
       ->setReadOnly(TRUE);
+    $fields['type'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Type'))
+      ->setDescription(t('The Status type/bundle.'))
+      ->setSetting('target_type', 'status_type')
+      ->setRequired(TRUE);
     $fields['uuid'] = BaseFieldDefinition::create('uuid')
       ->setLabel(t('UUID'))
       ->setDescription(t('The UUID of the Status entity.'))

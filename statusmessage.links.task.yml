@@ -1,8 +1,4 @@
 # Status routing definition
-status.settings_tab:
-  route_name: status.settings
-  title: 'Settings'
-  base_route: status.settings
 entity.status.canonical:
   route_name: entity.status.canonical
   base_route: entity.status.canonical

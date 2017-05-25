@@ -1,0 +1,11 @@
+entity.status.add_form:
+  route_name: 'status.add_page'
+  title: 'Add Status'
+  appears_on:
+    - entity.status.collection
+entity.status_type.add_form:
+  route_name: 'entity.status_type.add_form'
+  title: 'Add Status type'
+  appears_on:
+    - entity.status_type.collection
+
