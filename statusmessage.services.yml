@@ -1,0 +1,5 @@
+services:
+  statusservice:
+    class: Drupal\statusmessage\StatusService
+    arguments: ["@database", "@entity_type.manager", "@entity.query", "@flag"]
+
