@@ -4,6 +4,11 @@ namespace Drupal\statusmessage\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\statusmessage\Entity\Status;
+use Drupal\statusmessage\StatusService;
+use Drupal\statusmessage\StatusTypeService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 
 /**
  * Form controller for Status edit forms.
@@ -11,6 +16,30 @@ use Drupal\Core\Form\FormStateInterface;
  * @ingroup statusmessage
  */
 class StatusForm extends FormBase {
+
+  protected $statusTypeService;
+
+  protected $statusService;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('status_type_service'),
+      $container->get('statusservice'));
+  }
+
+  /**
+   * StatusForm constructor.
+   * @param StatusTypeService $status_type_service
+   * @param StatusService $status_service
+   */
+  public function __construct(StatusTypeService $status_type_service, StatusService $status_service) {
+    $this->statusTypeService = $status_type_service;
+    $this->statusService = $status_service;
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -41,7 +70,7 @@ class StatusForm extends FormBase {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $entity = $this->entity;
-//    $status = parent::save($form, $form_state);
+    $status = parent::save($form, $form_state);
 
 
     switch ($status) {
@@ -65,9 +94,8 @@ class StatusForm extends FormBase {
    * @return string
    *   The unique string identifying the form.
    */
-  public function getFormId()
-  {
-    // TODO: Implement getFormId() method.
+  public function getFormId() {
+    return 'status_form';
   }
 
   /**
@@ -77,10 +105,30 @@ class StatusForm extends FormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \InvalidArgumentException
    */
-  public function submitForm(array &$form, FormStateInterface $form_state)
-  {
-    // TODO: Implement submitForm() method.
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+
+    if (!empty($this->statusTypeService)) {
+      foreach ($this->statusTypeService->loadAll() as $type) {
+        if (!$type->getMedia()) {
+
+          $recipientUid = \Drupal::routeMatch()->getParameters()->get('user')->id();
+
+          $statusEntity = Status::create([
+            'type' => $type->id(),
+            'uid' => \Drupal::currentUser()->id(),
+            'recipient' => $recipientUid ? $recipientUid : \Drupal::currentUser()->id()
+          ]);
+
+          $statusEntity->setMessage($form_state->getValue('message'));
+          $statusEntity->save();
+
+          break;
+        }
+      }
+    }
   }
 }
 

@@ -39,4 +39,8 @@ class StatusTypeService {
   public function load($id) {
     return $this->entityTypeManager->getStorage('status_type')->load($id);
   }
+
+  public function loadAll() {
+    return $this->entityTypeManager->getStorage('status_type')->loadMultiple($this->getTypes());
+  }
 }
