@@ -20,6 +20,9 @@ class StatusForm extends FormBase {
     $form['message'] = array(
       '#type' => 'textarea',
       '#description' => 'Status Message',
+      '#attributes' => array(
+        'placeholder' => t('Post a status update'),
+      ),
 
     );
 
@@ -39,8 +42,8 @@ class StatusForm extends FormBase {
   public function save(array $form, FormStateInterface $form_state) {
     $entity = $this->entity;
 //    $status = parent::save($form, $form_state);
-    
-    
+
+
     switch ($status) {
       case SAVED_NEW:
         drupal_set_message($this->t('Created the %label Status.', [
