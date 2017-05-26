@@ -15,12 +15,6 @@ use Drupal\flag\FlagService;
  */
 class StatusService {
 
-  /**
-   * Drupal\Core\Database\Driver\mysql\Connection definition.
-   *
-   * @var Drupal\Core\Database\Driver\mysql\Connection
-   */
-  protected $database;
 
   /**
    * Drupal\Core\Entity\EntityTypeManager definition.
@@ -45,8 +39,7 @@ class StatusService {
   /**
    * Constructor.
    */
-  public function __construct(Connection $database, EntityTypeManager $entity_type_manager, QueryFactory $entity_query, FlagService $flag) {
-    $this->database = $database;
+  public function __construct(EntityTypeManager $entity_type_manager, QueryFactory $entity_query, FlagService $flag) {
     $this->entity_type_manager = $entity_type_manager;
     $this->entity_query = $entity_query;
     $this->flag = $flag;
