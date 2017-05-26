@@ -1,0 +1,9 @@
+
+statusmessage.status_form:
+  path: '/statusmessage/form/default'
+  defaults:
+    _form: '\Drupal\statusmessage\Form\DefaultForm'
+    _title: 'DefaultForm'
+  requirements:
+    _access: 'TRUE'
+  

@@ -89,10 +89,10 @@ class StatusTypeForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $status_type = $this->entity;
-$media = $form_state->getValue('media');
-$mime = $form_state->getValue('mime');
     $status_type->setMedia($form_state->getValue('media'));
-    $status_type->setMime($this->mimeTypes[$form_state->getValue('mime')]);
+    if ($status_type->getMedia()) {
+      $status_type->setMime($this->mimeTypes[$form_state->getValue('mime')]);
+    }
 
     $status = $status_type->save();
 

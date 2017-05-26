@@ -3,3 +3,7 @@ services:
     class: Drupal\statusmessage\StatusService
     arguments: ["@database", "@entity_type.manager", "@entity.query", "@flag"]
 
+  status_type_service:
+    class: Drupal\statusmessage\StatusTypeService
+    arguments: ['@entity.query', '@entity_type.manager']
+
