@@ -29,6 +29,9 @@ function template_preprocess_status(array &$variables) {
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
+
+  $variables['content']['status_message'] = $status->getMessage()->view();
+
 }
 
 /**
