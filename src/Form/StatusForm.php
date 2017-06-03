@@ -114,18 +114,23 @@ class StatusForm extends FormBase {
       foreach ($this->statusTypeService->loadAll() as $type) {
         if (!$type->getMedia()) {
 
-          $recipientUid = \Drupal::routeMatch()->getParameters()->get('user')->id();
+          $userViewed = \Drupal::routeMatch()->getParameters()->get('user');
 
-          $statusEntity = Status::create([
-            'type' => $type->id(),
-            'uid' => \Drupal::currentUser()->id(),
-            'recipient' => $recipientUid ? $recipientUid : \Drupal::currentUser()->id()
-          ]);
+          if ($userViewed !== null) {
 
-          $statusEntity->setMessage($form_state->getValue('message'));
-          $statusEntity->save();
+            $recipientUid = \Drupal::routeMatch()->getParameters()->get('user')->id();
 
-          break;
+            $statusEntity = Status::create([
+              'type' => $type->id(),
+              'uid' => \Drupal::currentUser()->id(),
+              'recipient' => $recipientUid ? $recipientUid : \Drupal::currentUser()->id()
+            ]);
+
+            $statusEntity->setMessage($form_state->getValue('message'));
+            $statusEntity->save();
+
+            break;
+          }
         }
       }
     }
