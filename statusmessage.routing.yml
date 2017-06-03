@@ -7,3 +7,11 @@ statusmessage.status_form:
   requirements:
     _access: 'TRUE'
   
+
+statusmessage.status_preview_controller_generate:
+  path: '/statusmessage/generate/preview'
+  defaults:
+    _controller: '\Drupal\statusmessage\Controller\StatusPreviewController::generate'
+    _title: 'Preview Generator'
+  requirements:
+    _permission: 'access content'
