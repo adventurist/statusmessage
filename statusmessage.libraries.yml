@@ -1,0 +1,9 @@
+status:
+  version: 1.x
+  js:
+    js/statusmessage.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal
+    - core/drupalSettings

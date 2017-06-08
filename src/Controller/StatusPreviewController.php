@@ -1,8 +1,14 @@
 <?php
 
 namespace Drupal\statusmessage\Controller;
+require_once(DRUPAL_ROOT .'/vendor/autoload.php');
 
 use Drupal\Core\Controller\ControllerBase;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use GuzzleHttp\Client;
+
+
 
 /**
  * Class StatusPreviewController.
@@ -11,17 +17,46 @@ use Drupal\Core\Controller\ControllerBase;
  */
 class StatusPreviewController extends ControllerBase {
 
+  protected $httpClient;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('http_client'));
+  }
+
+  /**
+   * Constructor.
+   */
+  public function __construct(Client $http_client) {
+    $this->httpClient = $http_client;
+  }
   /**
    * Generate.
    *
    * @return string
    *   Return Hello string.
    */
-  public function generate() {
-    return [
-      '#type' => 'markup',
-      '#markup' => $this->t('Implement method: generate')
-    ];
+  public function generate($url) {
+
+    \Drupal::logger('StatusPreviewController')->debug('This is getting called');
+
+    $ogParsed = '';
+    $contents = file_get_contents('http://' . $url);
+
+
+    $response = new Response();
+    $response->setContent(\GuzzleHttp\json_encode(array('data' => $contents)));
+    $response->headers->set('Content-Type', 'application/json');
+    return $response;
+
+//    $seeethis = 'none';
+//    return [
+//      '#type' => 'form',
+//      '#plain_text' => $url,
+//    ];
   }
 
 }

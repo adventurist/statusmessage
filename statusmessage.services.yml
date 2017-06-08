@@ -7,3 +7,6 @@ services:
     class: Drupal\statusmessage\StatusTypeService
     arguments: ['@entity.query', '@entity_type.manager']
 
+  preview_generator:
+    class: Drupal\statusmessage\ClientGeneratorService
+    arguments: ['@http_client']
