@@ -52,13 +52,15 @@ class TwitterApiForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
+    $muhTokens = $this->twitterConfig->get('oauth_access_token');
+
     $form['oauth_access_token'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Oauth Access Token'),
 //      '#description' => $this->t('Oauth Access Token'),
       '#maxlength' => 64,
       '#size' => 64,
-      '#default' => $this->twitterConfig->get('oauth_access_token'),
+      '#value' => $this->twitterConfig->get('oauth_access_token'),
     ];
     $form['oauth_access_token_secret'] = [
       '#type' => 'textfield',
@@ -66,7 +68,7 @@ class TwitterApiForm extends FormBase {
 //      '#description' => $this->t('Oauth Access Token Secret'),
       '#maxlength' => 64,
       '#size' => 64,
-      '#default' => $this->twitterConfig->get('oauth_access_token_secret'),
+      '#value' => $this->twitterConfig->get('oauth_access_token_secret'),
     ];
     $form['consumer_key'] = [
       '#type' => 'textfield',
@@ -74,15 +76,15 @@ class TwitterApiForm extends FormBase {
 //      '#description' => $this->t('Consumer Key'),
       '#maxlength' => 64,
       '#size' => 64,
-      '#default' => $this->twitterConfig->get('consumer_key'),
+      '#value' => $this->twitterConfig->get('consumer_key'),
     ];
     $form['consumer_secret'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Consumer Secret'),
 //      '#description' => $this->t('Consumer Secret'),
       '#maxlength' => 64,
-      '#size' => 64,
-      '#default' => $this->twitterConfig->get('consumer_secret'),
+      '#sizeue' => 64,
+      '#value' => $this->twitterConfig->get('consumer_secret'),
 
     ];
 
