@@ -23,3 +23,12 @@ statusmessage.status_preview_controller_generate_35:
     _title: 'Generate'
   requirements:
     _permission: 'access content'
+
+statusmessage.twitter_api_form:
+  path: '/statusmessage/form/twitter_api'
+  defaults:
+    _form: '\Drupal\statusmessage\Form\TwitterApiForm'
+    _title: 'TwitterApiForm'
+  requirements:
+    _access: 'TRUE'
+  

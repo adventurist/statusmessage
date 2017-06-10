@@ -14,3 +14,11 @@ entity.status_type.collection:
   parent: system.admin_structure
   weight: 99
 
+# Configuration for Twitter API OAUTH Authentication
+config.statusmessage.twitter:
+  title: Twitter API Settings
+  description: 'Configure Authentication tokens for Twitter API'
+  route_name: statusmessage.twitter_api_form
+  parent: system.admin_structure
+
+
