@@ -23,11 +23,14 @@ class TwitterApiForm extends FormBase {
   protected $configFactory;
 
   private $statusTwitter;
+
+  private $twitterConfig;
   /**
    * Constructs a new TwitterApiForm object.
    */
   public function __construct(ConfigFactory $config_factory) {
     $this->configFactory = $config_factory;
+    $this->twitterConfig = $this->configFactory->getEditable('twitter_api.settings');
   }
 
   public static function create(ContainerInterface $container) {
@@ -55,6 +58,7 @@ class TwitterApiForm extends FormBase {
 //      '#description' => $this->t('Oauth Access Token'),
       '#maxlength' => 64,
       '#size' => 64,
+      '#default' => $this->twitterConfig->get('oauth_access_token'),
     ];
     $form['oauth_access_token_secret'] = [
       '#type' => 'textfield',
@@ -62,6 +66,7 @@ class TwitterApiForm extends FormBase {
 //      '#description' => $this->t('Oauth Access Token Secret'),
       '#maxlength' => 64,
       '#size' => 64,
+      '#default' => $this->twitterConfig->get('oauth_access_token_secret'),
     ];
     $form['consumer_key'] = [
       '#type' => 'textfield',
@@ -69,6 +74,7 @@ class TwitterApiForm extends FormBase {
 //      '#description' => $this->t('Consumer Key'),
       '#maxlength' => 64,
       '#size' => 64,
+      '#default' => $this->twitterConfig->get('consumer_key'),
     ];
     $form['consumer_secret'] = [
       '#type' => 'textfield',
@@ -76,6 +82,8 @@ class TwitterApiForm extends FormBase {
 //      '#description' => $this->t('Consumer Secret'),
       '#maxlength' => 64,
       '#size' => 64,
+      '#default' => $this->twitterConfig->get('consumer_secret'),
+
     ];
 
     $form['submit'] = [
@@ -108,12 +116,10 @@ class TwitterApiForm extends FormBase {
 
     if ($form_state->getValue('oauth_access_token')) {
 
-      $twitterConfig = $this->configFactory->getEditable('twitter_api.settings');
-
-      $twitterConfig->set('consumer_key', $form_state->getValue('consumer_key'))->save();
-      $twitterConfig->set('consumer_secret', $form_state->getValue('consumer_secret'))->save();
-      $twitterConfig->set('oauth_access_token', $form_state->getValue('oauth_access_token'))->save();
-      $twitterConfig->set('oauth_access_token_secret', $form_state->getValue('oauth_access_token_secret'))->save();
+      $this->twitterConfig->set('consumer_key', $form_state->getValue('consumer_key'))->save();
+      $this->twitterConfig->set('consumer_secret', $form_state->getValue('consumer_secret'))->save();
+      $this->twitterConfig->set('oauth_access_token', $form_state->getValue('oauth_access_token'))->save();
+      $this->twitterConfig->set('oauth_access_token_secret', $form_state->getValue('oauth_access_token_secret'))->save();
 
     }
   }
