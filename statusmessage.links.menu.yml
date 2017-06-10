@@ -21,4 +21,11 @@ config.statusmessage.twitter:
   route_name: statusmessage.twitter_api_form
   parent: entity.status.collection
 
+# Configuration for Instagram API OAUTH Authentication
+config.statusmessage.instagram:
+  title: Instagram API Settings
+  description: 'Configure Authentication tokens for Instagram API'
+  route_name: statusmessage.instagram_api_form
+  parent: entity.status.collection
+
 

@@ -99,7 +99,7 @@ class StatusTwitter {
     }
 
   private function parseUrl ($text) {
-    //TODO retrieve Tweet ID
+
   }
 
 

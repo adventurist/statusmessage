@@ -31,4 +31,12 @@ statusmessage.twitter_api_form:
     _title: 'TwitterApiForm'
   requirements:
     _access: 'TRUE'
-  
+
+statusmessage.instagram_api_form:
+  path: '/statusmessage/form/instagram_api'
+  defaults:
+    _form: '\Drupal\statusmessage\Form\InstagramApiForm'
+    _title: 'InstagramApiForm'
+  requirements:
+    _access: 'TRUE'
+
