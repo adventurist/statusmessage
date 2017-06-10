@@ -16,9 +16,12 @@ class StatusTwitter {
   protected $consumerKey;
   protected $consumerSecret;
 
+  private $instagramConfig;
 
   public function __construct() {
+    $this->instagramConfig = \Drupal::config('twitter_api.settings');
   }
+
 
   /**
    * @return mixed
@@ -79,6 +82,29 @@ class StatusTwitter {
    */
   public function setOauthAccessToken($oauthAccessToken) {
     $this->oauthAccessToken = $oauthAccessToken;
+  }
+
+
+  public function generateRequest($url) {
+
+  }
+
+  public function sendRequest($twid) {
+
+    //TODO Instantiating an Http Client
+
+    $twitterConfig = \Drupal::config('twitter_api.settings');
+
+
+    }
+
+  private function parseUrl ($text) {
+    //TODO retrieve Tweet ID
+  }
+
+
+  public function setNodeData() {
+
   }
 
 

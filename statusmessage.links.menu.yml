@@ -1,6 +1,6 @@
 # Status menu items definition
 entity.status.collection:
-  title: 'Status list'
+  title: 'Status Message'
   route_name: entity.status.collection
   description: 'List Status entities'
   parent: system.admin_structure
@@ -8,7 +8,7 @@ entity.status.collection:
 
 # Status type menu items definition
 entity.status_type.collection:
-  title: 'Status type'
+  title: 'Status Message type'
   route_name: entity.status_type.collection
   description: 'List Status type (bundles)'
   parent: system.admin_structure
@@ -19,6 +19,6 @@ config.statusmessage.twitter:
   title: Twitter API Settings
   description: 'Configure Authentication tokens for Twitter API'
   route_name: statusmessage.twitter_api_form
-  parent: system.admin_structure
+  parent: entity.status.collection
 
 

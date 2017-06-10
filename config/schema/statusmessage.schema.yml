@@ -14,3 +14,20 @@ twitter_api.config:
     consumer_secret:
           type: text
           label: 'Consumer secret'
+
+instagram_api.config:
+  type: config_object
+  label: 'Credentials to authenticate with Instagram API'
+  mapping:
+    oauth_access_token:
+          type: text
+          label: 'Access Token'
+    oauth_access_token_secret:
+          type: text
+          label: 'Access Token Secret'
+    consumer_key:
+          type: text
+          label: 'Consumer key'
+    consumer_secret:
+          type: text
+          label: 'Consumer secret'
