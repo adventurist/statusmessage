@@ -205,7 +205,7 @@ class StatusTwitter {
     if(!empty($data->extended_entities->media[0]->video_info->variants)) {
       $z = null;
       $vidUrl = null;
-      $bitrate = new stdClass();
+      $bitrate = new \stdClass();
       $bitrate->value = null;
       $bitrate->index = null;
 
