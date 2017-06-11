@@ -122,7 +122,7 @@ class TwitterApiForm extends FormBase {
       $this->twitterConfig->set('consumer_secret', $form_state->getValue('consumer_secret'))->save();
       $this->twitterConfig->set('oauth_access_token', $form_state->getValue('oauth_access_token'))->save();
       $this->twitterConfig->set('oauth_access_token_secret', $form_state->getValue('oauth_access_token_secret'))->save();
-
+	\Drupal::logger('statusmessageTwitterAPI')->debug('This is my token: %token', array('%token' => $form_state->getValue('oauth_access_token')));
     }
   }
 }
