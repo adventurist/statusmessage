@@ -12,6 +12,7 @@ require_once(DRUPAL_ROOT .'/vendor/autoload.php');
 
 use TwitterAPIExchange;
 use Drupal\statusmessage\Entity;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\node\Entity\Node;
 use Drupal\file\Entity\File;
 
@@ -30,6 +31,7 @@ class StatusTwitter {
     $this->twitterConfig = \Drupal::config('twitter_api.settings');
     $this->parameter = $parameter;
   }
+
 
   /**
    * @return mixed
@@ -131,6 +133,7 @@ class StatusTwitter {
         $tweetNode->set('field_tweet_video', $media->video);
       }
 
+
       if ($tweetNode->save()) {
         return $tweetNode->id();
       }
@@ -154,12 +157,7 @@ class StatusTwitter {
     $users = [];
     $links = [];
 
-    foreach($data->entities->hashtags as $key => $h) {
-      $tags[] = $h->text;
-    }
-    foreach($data->entities->user_mentions as $u) {
-      $users[] = $u->screen_name;
-    }
+    $terms = $this->processTerms($data);
 
     if (!empty($data->entities->urls)) {
       foreach ($data->entities->urls as $url)  {
@@ -235,5 +233,40 @@ class StatusTwitter {
     return $media;
   }
 
+  private function processTerms($data) {
+    $terms = new \stdClass();
+    $terms->tags = [];
+    $terms->users = [];
+
+    foreach($data->entities->hashtags as $key => $h) {
+      $term = \Drupal::entityQuery('taxonomy_term')->condition('name', $h->text)->execute();
+      if (count($term) < 1) {
+        $term = Term::create(['name' => $h->text, 'vid' => 'twitter']);
+        if ($term->save()) {
+          $terms->tags[] = $term->id();
+        } else {
+          \Drupal::logger('StatusTwitter')->warning('Could not save term with name %name', array('%name' => $h->text));
+        }
+      } else {
+        $terms->tags[] = array_values($term)[0];
+      }
+    }
+    foreach($data->entities->user_mentions as $u) {
+      $terms->users[] = $u->screen_name;
+      $term = \Drupal::entityQuery('taxonomy_term')->condition('name', $h->text)->execute();
+      if (count($term) < 1) {
+        $term = Term::create(['name' => $h->text, 'vid' => 'twitter_user']);
+        if ($term->save()) {
+          $terms->users[] = $term->id();
+        } else {
+          \Drupal::logger('StatusTwitter')->warning('Could not save term with name %name', array('%name' => $h->text));
+        }
+      } else {
+        $terms->users[] = array_values($term)[0];
+      }
+    }
+
+    return($terms);
+  }
 }
 
