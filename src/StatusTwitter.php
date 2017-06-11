@@ -8,7 +8,8 @@
 
 namespace Drupal\statusmessage;
 
-require_once(DRUPAL_ROOT .'/vendor/autoload.php');
+//require_once DRUPAL_ROOT .'/vendor/autoload.php';
+require_once __DIR__ . './../includes/TwitterAPIExchange.php';
 
 use TwitterAPIExchange;
 use Drupal\statusmessage\Entity;
