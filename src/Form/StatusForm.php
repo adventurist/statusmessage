@@ -197,11 +197,11 @@ $stophere = null;
 //    }
   }
   public function statusAjaxSubmit(array &$form, FormStateInterface $form_state) {
-
-    if (strpos($form_state->getValue('message'), 'twitter')) {
+    $message = $form_state->getValue('message');
+    if (strpos($message, 'twitter')) {
       preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $message, $match);
       if ($this->previewGenerator !== null && !empty($match) && array_values($match)[0] !== null) {
-        $url = array_values($match)[0];
+        $url = is_array(array_values($match)[0]) ? array_values(array_values($match)[0])[0]: array_values($match)[0];
         $statusTwitter = new StatusTwitter($url);
         $nid = $statusTwitter->sendRequest();
       }
@@ -221,7 +221,7 @@ $stophere = null;
               'recipient' => $userViewed
             ]);
 
-            $statusEntity->setMessage($form_state->getValue('message'));
+            $statusEntity->setMessage($message);
             $statusEntity->save();
 
             if (\Drupal::service('module_handler')->moduleExists('heartbeat')) {
