@@ -9,7 +9,7 @@ use Drupal\statusmessage\ClientGeneratorService;
 use Drupal\statusmessage\StatusService;
 use Drupal\statusmessage\StatusTypeService;
 use Drupal\statusmessage\Ajax\ClientCommand;
-use Drupal\heartbeat\HeartbeatStreamServices;
+use Drupal\statusmessage\StatusTwitter;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\heartbeat\Ajax\SelectFeedCommand;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -198,8 +198,14 @@ $stophere = null;
   }
   public function statusAjaxSubmit(array &$form, FormStateInterface $form_state) {
 
-
-
+    if (strpos($form_state->getValue('message'), 'twitter')) {
+      preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $message, $match);
+      if ($this->previewGenerator !== null && !empty($match) && array_values($match)[0] !== null) {
+        $url = array_values($match)[0];
+        $statusTwitter = new StatusTwitter($url);
+        $nid = $statusTwitter->sendRequest();
+      }
+    }
 
     if (!empty($this->statusTypeService)) {
       foreach ($this->statusTypeService->loadAll() as $type) {

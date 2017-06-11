@@ -57,6 +57,8 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route = "entity.status_type.edit_form"
  * )
  */
+const TWEET_NODE_TYPE = 'tweet';
+
 class Status extends ContentEntityBase implements StatusInterface {
   use EntityChangedTrait;
   /**
