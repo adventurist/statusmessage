@@ -252,15 +252,16 @@ class StatusTwitter {
         $terms->tags[] = array_values($term)[0];
       }
     }
+    $term = null;
     foreach($data->entities->user_mentions as $u) {
       $terms->users[] = $u->screen_name;
-      $term = \Drupal::entityQuery('taxonomy_term')->condition('name', $h->text)->execute();
+      $term = \Drupal::entityQuery('taxonomy_term')->condition('name', $u->text)->execute();
       if (count($term) < 1) {
-        $term = Term::create(['name' => $h->text, 'vid' => 'twitter_user']);
+        $term = Term::create(['name' => $u->screen_name, 'vid' => 'twitter_user']);
         if ($term->save()) {
           $terms->users[] = $term->id();
         } else {
-          \Drupal::logger('StatusTwitter')->warning('Could not save term with name %name', array('%name' => $h->text));
+          \Drupal::logger('StatusTwitter')->warning('Could not save term with name %name', array('%name' => $u->screen_name));
         }
       } else {
         $terms->users[] = array_values($term)[0];
