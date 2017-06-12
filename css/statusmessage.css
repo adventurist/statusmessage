@@ -1,0 +1,42 @@
+/*Main Feed Form*/
+
+#edit-mediatabs input[type="radio"] {
+  -webkit-appearance: none;
+  display: inline-block;
+}
+
+#edit-mediatabs .form-item-mediatabs {
+  display: inline-block;
+  position: relative;
+  border-right: 1px solid white;
+
+}
+#edit-mediatabs input.form-radio {
+  background: #928f8e;
+  min-width: 100%;
+  margin-bottom:0;
+  padding: 0em 6em 2.5em 0em;
+  font-weight: 700;
+  display: inline-block;
+}
+
+#edit-mediatabs input.form-radio:hover {
+  background: #500005;
+}
+
+
+#edit-mediatabs input[type="radio"]:checked {
+  background: #003b08;
+}
+
+#edit-mediatabs label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  position: absolute;
+  /* left: 50%; */
+  display: inline-block;
+  width: auto;
+  padding-left: 20%;
+  transform: translate(5%, -150%);
+}

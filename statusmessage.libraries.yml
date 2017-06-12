@@ -1,5 +1,8 @@
 status:
   version: 1.x
+  css:
+      theme:
+        css/statusmessage.css: {}
   js:
     js/statusmessage.js: {}
   dependencies:

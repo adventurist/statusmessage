@@ -28,6 +28,8 @@ class StatusForm extends FormBase {
 
   protected $previewGenerator;
 
+  private $mediaTabs;
+
   /**
    * {@inheritdoc}
    */
@@ -47,6 +49,7 @@ class StatusForm extends FormBase {
     $this->statusTypeService = $status_type_service;
     $this->statusService = $status_service;
     $this->previewGenerator = $preview_generator;
+    $this->mediaTabs = ['Photo', 'Video'];
   }
 
   /**
@@ -79,6 +82,19 @@ class StatusForm extends FormBase {
         ),
       ],
     );
+
+    $form['mediatabs'] = [
+      '#type' => 'radios',
+//      '#description' => $this->t('User selectable feeds'),
+      '#options' => $this->mediaTabs,
+//      '#ajax' => [
+//        'callback' => '::updateFeed',
+////        'event' => 'onclick',
+//        'progress' => array(
+//          'type' => 'none',
+////        'message' => t('Fetching feed'),
+//        ),
+      ];
 
 
     $form['post'] = array(

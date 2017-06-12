@@ -134,6 +134,10 @@ class StatusTwitter {
         $tweetNode->set('field_tweet_video', $media->video);
       }
 
+      if ($media->userImage) {
+        $tweetNode->set('field_user_image', $media->userImage);
+      }
+
 
       if ($tweetNode->save()) {
         return $tweetNode->id();
@@ -154,8 +158,6 @@ class StatusTwitter {
     $user = \Drupal::currentUser();
     $ip =  \Drupal::request()->getClientIp();//get user's IP
 
-    $tags = [];
-    $users = [];
     $links = [];
 
     $terms = $this->processTerms($data);
@@ -195,8 +197,17 @@ class StatusTwitter {
 
 
   private function getTweetMedia($data) {
-    $media = new \stdClass();
 
+    $media = new \stdClass();
+    $images = [];
+    $video = null;
+    $userImage = null;
+
+    if ($data->user->profile_image_url_https) {
+      $userImage = file_get_contents($data->user->profile_image_url_https);
+      $file = file_save_data($userImage);
+      $userImage = $file->id();
+    }
     foreach($data->extended_entities->media as $media)  {
       $image = file_get_contents($media->media_url);
       $file = file_save_data($image);
@@ -221,15 +232,19 @@ class StatusTwitter {
 
       if ($bitrate->index !== null) {
         $data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url;
-        $video = system_retrieve_file($vidUrl, null, TRUE);
-        $file = File::create([
-          'id' => 'id',
-        ])->save();
+//        $video = system_retrieve_file($vidUrl, null, TRUE);
+//        $file = File::create([
+//          'id' => 'id',
+//        ])->save();
+        $video = file_get_contents($data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url);
+        $file = file_save_data($video);
+        $video = $file->id();
       }
     }
 
     $media->images = $images;
     $media->video = $video;
+    $media->userImage = $userImage;
 
     return $media;
   }
