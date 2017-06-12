@@ -178,12 +178,12 @@ class StatusTwitter {
       'type' => 'tweet',
       'title' => $data->user->screen_name . '_' . $nowTime->format('Y.m.d.Hi'),
       'uid' => $user->id(),
-      'field_tags' => $tags,
+      'field_tags' => $terms->tags,
       'field_tweet_url' => $this->parameter,
       'field_twit_id' => $data->id,
       'field_post_date' => strtok($data->created_at, ' +'),
-      'field_username' => $data->username,
-      'field_users' => $users,
+      'field_username' => $terms->username,
+      'field_users' => $terms->users,
       'field_links' => $links,
       'status' => 1,
     ]);
@@ -238,9 +238,32 @@ class StatusTwitter {
     $terms = new \stdClass();
     $terms->tags = [];
     $terms->users = [];
+    $terms->username = -1;
 
+    if ($data->user->screen_name) {
+      $term = \Drupal::entityQuery('taxonomy_term')
+        ->condition('name', $data->user->screen_name)
+        ->condition('vid', 'twitter_user')
+        ->execute();
+
+      if (count($term) < 1) {
+        $term = Term::create(['name' => $data->user->screen_name, 'vid' => 'twitter_user']);
+        if ($term->save()) {
+          $terms->username = $term->id();
+        } else {
+          \Drupal::logger('StatusTwitter')->warning('Could not save term with name %name', array('%name' => $data->user->screen_name));
+        }
+      } else {
+        $terms->username = array_values($term)[0];
+      }
+    }
+    $term = null;
     foreach($data->entities->hashtags as $key => $h) {
-      $term = \Drupal::entityQuery('taxonomy_term')->condition('name', $h->text)->execute();
+      $term = \Drupal::entityQuery('taxonomy_term')
+        ->condition('name', $h->text)
+        ->condition('vid', 'twitter')
+        ->execute();
+
       if (count($term) < 1) {
         $term = Term::create(['name' => $h->text, 'vid' => 'twitter']);
         if ($term->save()) {
@@ -254,8 +277,11 @@ class StatusTwitter {
     }
     $term = null;
     foreach($data->entities->user_mentions as $u) {
-      $terms->users[] = $u->screen_name;
-      $term = \Drupal::entityQuery('taxonomy_term')->condition('name', $u->text)->execute();
+      $term = \Drupal::entityQuery('taxonomy_term')
+        ->condition('name', $u->text)
+        ->condition('vid', 'twitter_user')
+        ->execute();
+
       if (count($term) < 1) {
         $term = Term::create(['name' => $u->screen_name, 'vid' => 'twitter_user']);
         if ($term->save()) {
