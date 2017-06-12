@@ -13,7 +13,8 @@
           // console.log(cleanUrl);
           $.ajax({
             type: 'POST',
-            url: '/statusmessage/generate-preview/' + cleanUrl,
+            url: '/statusmessage/generate-preview/build' ,
+            data: {'data': cleanUrl},
             success: function (response) {
 
               // console.log(response.data);

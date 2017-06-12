@@ -41,22 +41,17 @@ class StatusPreviewController extends ControllerBase {
    */
   public function generate($url) {
 
-    \Drupal::logger('StatusPreviewController')->debug('This is getting called');
+    if ($url == 'build') {
+      $url = \Drupal::request()->get('data');
 
-    $ogParsed = '';
-    $contents = file_get_contents('http://' . $url);
+      $contents = file_get_contents('http://' . $url);
+      $response = new Response();
+      $response->setContent(\GuzzleHttp\json_encode(array('data' => $contents)));
+      $response->headers->set('Content-Type', 'application/json');
 
+      return $response;
+    }
 
-    $response = new Response();
-    $response->setContent(\GuzzleHttp\json_encode(array('data' => $contents)));
-    $response->headers->set('Content-Type', 'application/json');
-    return $response;
-
-//    $seeethis = 'none';
-//    return [
-//      '#type' => 'form',
-//      '#plain_text' => $url,
-//    ];
   }
 
 }
