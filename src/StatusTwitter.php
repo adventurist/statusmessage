@@ -155,6 +155,7 @@ class StatusTwitter {
 
     //Create datetime object for title, media file path and content date field
     $nowTime = new \DateTime();
+    $posted = date('Y-m-d\TH:i:s', strtotime($data->created_at));
     $user = \Drupal::currentUser();
     $ip =  \Drupal::request()->getClientIp();//get user's IP
 
@@ -183,14 +184,14 @@ class StatusTwitter {
       'field_tags' => $terms->tags,
       'field_tweet_url' => $this->parameter,
       'field_twit_id' => $data->id,
-      'field_post_date' => strtok($data->created_at, ' +'),
+      'field_post_date' => [$posted],
       'field_username' => $terms->username,
       'field_users' => $terms->users,
       'field_links' => $links,
       'status' => 1,
     ]);
 
-    $node->set('body', $data->full_text);
+    $node->set('body', ['value' => $data->created_at . $data->full_text, 'format' =>'full_html']);
     return $node;
 
   }
