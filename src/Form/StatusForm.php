@@ -10,6 +10,7 @@ use Drupal\statusmessage\StatusService;
 use Drupal\statusmessage\StatusTypeService;
 use Drupal\statusmessage\Ajax\ClientCommand;
 use Drupal\statusmessage\StatusTwitter;
+use Drupal\statusmessage\StatusYoutube;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\heartbeat\Ajax\SelectFeedCommand;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -214,12 +215,18 @@ $stophere = null;
   }
   public function statusAjaxSubmit(array &$form, FormStateInterface $form_state) {
     $message = $form_state->getValue('message');
+    preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $message, $match);
     if (strpos($message, 'twitter')) {
-      preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $message, $match);
       if ($this->previewGenerator !== null && !empty($match) && array_values($match)[0] !== null) {
         $url = is_array(array_values($match)[0]) ? array_values(array_values($match)[0])[0]: array_values($match)[0];
         $statusTwitter = new StatusTwitter($url);
         $nid = $statusTwitter->sendRequest();
+      }
+    } else if (strpos($message, 'youtube')) {
+      if ($this->previewGenerator !== null && !empty($match) && array_values($match)[0] !== null) {
+        $url = is_array(array_values($match)[0]) ? array_values(array_values($match)[0])[0]: array_values($match)[0];
+        $statusYoutube = new StatusYoutube($url);
+        $nid = $statusYoutube->generateNode();
       }
     }
 
