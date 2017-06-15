@@ -191,7 +191,7 @@ class StatusTwitter {
       'status' => 1,
     ]);
 
-    $node->set('body', ['value' => $data->created_at . $data->full_text, 'format' =>'full_html']);
+    $node->set('body', ['value' => '<div class="created-date"> ' . $data->created_at . '</div>' . $data->full_text, 'format' =>'full_html']);
     return $node;
 
   }

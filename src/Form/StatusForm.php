@@ -222,7 +222,7 @@ $stophere = null;
         $statusTwitter = new StatusTwitter($url);
         $nid = $statusTwitter->sendRequest();
       }
-    } else if (strpos($message, 'youtube')) {
+    } else if (strpos($message, 'youtube') || strpos($message, 'youtu.be')) {
       if ($this->previewGenerator !== null && !empty($match) && array_values($match)[0] !== null) {
         $url = is_array(array_values($match)[0]) ? array_values(array_values($match)[0])[0]: array_values($match)[0];
         $statusYoutube = new StatusYoutube($url);
