@@ -16,6 +16,7 @@ use Drupal\statusmessage\Entity;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\node\Entity\Node;
 use Drupal\file\Entity\File;
+//use Drupal\Core\File;
 
 
 class StatusTwitter {
@@ -131,7 +132,7 @@ class StatusTwitter {
       }
 
       if ($media->video) {
-        $tweetNode->set('field_tweet_video', $media->video);
+        $tweetNode->set('field_video', $media->video);
       }
 
       if ($media->userImage) {
@@ -206,12 +207,14 @@ class StatusTwitter {
 
     if ($data->user->profile_image_url_https) {
       $userImage = file_get_contents($data->user->profile_image_url_https);
-      $file = file_save_data($userImage);
+      $file = file_save_data($userImage, 'public://' . substr($data->user->profile_image_url_https, strrpos($data->user->profile_image_url_https, '/') + 1));
+
+
       $userImage = $file->id();
     }
     foreach($data->extended_entities->media as $media)  {
       $image = file_get_contents($media->media_url);
-      $file = file_save_data($image);
+      $file = file_save_data($image, 'public://' . substr($media->media_url, strrpos($media->media_url, '/') + 1));
       $images[] = $file->id();
     }
     if(!empty($data->extended_entities->media[0]->video_info->variants)) {
@@ -221,14 +224,20 @@ class StatusTwitter {
       $bitrate->value = null;
       $bitrate->index = null;
 
-      for ($z = 0; $z < $data->extended_entities->media[0]->video_info->variants; $z++) {
-        if (!empty($data->extended_entities->media[0]->video_info->variants[$z]->bitrate) &&
-          $data->extended_entities->media[0]->video_info->variants[$z]->content_type === 'video/mp4') {
-          if ($data->extended_entities->media[0]->video_info->variants[$z]->bitrate > $bitrate->value) {
-            $bitrate->value = $data->extended_entities->media[0]->video_info->variants[$z]->bitrate;
-            $bitrate->index = $z;
+      $variantCount = count($data->extended_entities->media[0]->video_info->variants);
+      if ($variantCount > 1) {
+        for ($z = 0; $z < $variantCount; $z++) {
+          if ($data->extended_entities->media[0]->video_info->variants[$z]->bitrate &&
+            $data->extended_entities->media[0]->video_info->variants[$z]->content_type === 'video/mp4'
+          ) {
+            if ($data->extended_entities->media[0]->video_info->variants[$z]->bitrate > $bitrate->value) {
+              $bitrate->value = $data->extended_entities->media[0]->video_info->variants[$z]->bitrate;
+              $bitrate->index = $z;
+            }
           }
         }
+      } else {
+        $bitrate->index = 0;
       }
 
       if ($bitrate->index !== null) {
@@ -238,7 +247,7 @@ class StatusTwitter {
 //          'id' => 'id',
 //        ])->save();
         $video = file_get_contents($data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url);
-        $file = file_save_data($video);
+        $file = file_save_data($video, 'public://' . substr($data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url, strrpos($data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url, '/') + 1));
         $video = $file->id();
       }
     }
@@ -294,7 +303,7 @@ class StatusTwitter {
     $term = null;
     foreach($data->entities->user_mentions as $u) {
       $term = \Drupal::entityQuery('taxonomy_term')
-        ->condition('name', $u->text)
+        ->condition('name', $u->screen_name)
         ->condition('vid', 'twitter_user')
         ->execute();
 

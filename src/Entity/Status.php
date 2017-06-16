@@ -250,10 +250,15 @@ class Status extends ContentEntityBase implements StatusInterface {
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['message'] = BaseFieldDefinition::create('string_long')
+    $fields['message'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Message'))
       ->setDescription(t('The message of the Status entity.'))
-      ->setRevisionable(TRUE);
+      ->setRevisionable(TRUE)
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'full_html',
+        'weight' => -4,
+      ));
 
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Publishing status'))
