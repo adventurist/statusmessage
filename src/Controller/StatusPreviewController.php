@@ -44,6 +44,21 @@ class StatusPreviewController extends ControllerBase {
     if ($url == 'build') {
       $url = \Drupal::request()->get('data');
 
+
+
+      $this->dom = new \DOMDocument;
+      $contents = file_get_contents('http://' . $url);
+      $this->dom->loadHTML($contents);
+
+      $xpath = new \DomXpath($this->dom);
+
+      $anchorAttributes = $this->getAnchorNodeNames();
+      $imgAttributes = $this->getImgNodeNames();
+      $imgLogos = $this->searchDom('img', 'logo');
+      $anchorLogos = $this->searchDom('a', 'logo');
+
+
+
       $contents = file_get_contents('http://' . $url);
       $response = new Response();
       $response->setContent(\GuzzleHttp\json_encode(array('data' => $contents)));
@@ -52,6 +67,70 @@ class StatusPreviewController extends ControllerBase {
       return $response;
     }
 
+  }
+
+
+
+  private function getAnchorNodeNames() {
+    if ($this->dom) {
+      $names = array();
+      $attrXpath = new \DomXpath($this->dom);
+
+      $nodes = $attrXpath->query('//a/@*');
+      $i = 0;
+      foreach ($nodes as $node) {
+        $names[$i] = new \stdClass();
+        $names[$i]->name = $node->nodeName;
+        $names[$i]->value = $node->nodeValue;
+        $i++;
+      }
+
+      return $names;
+    }
+  }
+
+  private function getImgNodeNames() {
+    if ($this->dom) {
+      $names = array();
+      $attrXpath = new \DomXpath($this->dom);
+
+      $nodes = $attrXpath->query('//img/@*');
+      $i = 0;
+      foreach ($nodes as $node) {
+        $names[$i] = new \stdClass();
+        $names[$i]->name = $node->nodeName;
+        $names[$i]->value = $node->nodeValue;
+        $i++;
+      }
+
+      return $names;
+    }
+  }
+
+  private function searchDom($tag, $string) {
+
+    if ($this->dom) {
+
+      $results = array();
+      $tags = $this->dom->getElementsByTagName($tag);
+
+
+      for ($i = 0; $i < $tags->length; $i++) {
+        $results[$i] = new \stdClass();
+
+        $src = $tags->item($i)->getAttribute('src');
+        if (strpos($src, 'logo')) {
+          $results[$i]->src = $src;
+        }
+
+        $href = $tags->item($i)->getAttribute('href');
+        if (strpos($href, 'logo')) {
+          $results[$i]->href = $href;
+        }
+      }
+
+      return $results;
+    }
   }
 
 }

@@ -207,14 +207,14 @@ class StatusTwitter {
 
     if ($data->user->profile_image_url_https) {
       $userImage = file_get_contents($data->user->profile_image_url_https);
-      $file = file_save_data($userImage, 'public://' . substr($data->user->profile_image_url_https, strrpos($data->user->profile_image_url_https, '/') + 1));
+      $file = file_save_data($userImage, 'public://' . substr($data->user->profile_image_url_https, strrpos($data->user->profile_image_url_https, '/') + 1), FILE_EXISTS_REPLACE);
 
 
       $userImage = $file->id();
     }
     foreach($data->extended_entities->media as $media)  {
       $image = file_get_contents($media->media_url);
-      $file = file_save_data($image, 'public://' . substr($media->media_url, strrpos($media->media_url, '/') + 1));
+      $file = file_save_data($image, 'public://' . substr($media->media_url, strrpos($media->media_url, '/') + 1), FILE_EXISTS_REPLACE);
       $images[] = $file->id();
     }
     if(!empty($data->extended_entities->media[0]->video_info->variants)) {
@@ -247,7 +247,7 @@ class StatusTwitter {
 //          'id' => 'id',
 //        ])->save();
         $video = file_get_contents($data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url);
-        $file = file_save_data($video, 'public://' . substr($data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url, strrpos($data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url, '/') + 1));
+        $file = file_save_data($video, 'public://' . substr($data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url, strrpos($data->extended_entities->media[0]->video_info->variants[$bitrate->index]->url, '/') + 1), FILE_EXISTS_REPLACE);
         $video = $file->id();
       }
     }
