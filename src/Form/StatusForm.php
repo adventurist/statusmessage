@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\statusmessage\Entity\Status;
 use Drupal\statusmessage\ClientGeneratorService;
+use Drupal\statusmessage\MarkupGenerator;
 use Drupal\statusmessage\StatusService;
 use Drupal\statusmessage\StatusTypeService;
 use Drupal\statusmessage\Ajax\ClientCommand;
@@ -27,7 +28,7 @@ class StatusForm extends FormBase {
 
   protected $statusService;
 
-  protected $previewGenerator;
+  protected $markupgenerator;
 
   private $mediaTabs;
 
@@ -38,18 +39,20 @@ class StatusForm extends FormBase {
     return new static(
       $container->get('status_type_service'),
       $container->get('statusservice'),
-      $container->get('preview_generator'));
+      $container->get('markupgenerator'));
   }
+
+  //TODO remove markup generator from this class
 
   /**
    * StatusForm constructor.
    * @param StatusTypeService $status_type_service
    * @param StatusService $status_service
    */
-  public function __construct(StatusTypeService $status_type_service, StatusService $status_service, ClientGeneratorService $preview_generator) {
+  public function __construct(StatusTypeService $status_type_service, StatusService $status_service, MarkupGenerator $markupgenerator) {
     $this->statusTypeService = $status_type_service;
     $this->statusService = $status_service;
-    $this->previewGenerator = $preview_generator;
+    $this->markupgenerator = $markupgenerator;
     $this->mediaTabs = ['Photo', 'Video'];
   }
 
@@ -166,7 +169,7 @@ $stophere = null;
     preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $message, $match);
 
 
-    if ($this->previewGenerator !== null && !empty($match) && array_values($match)[0] !== null) {
+    if ($this->markupgenerator !== null && !empty($match) && array_values($match)[0] !== null) {
 
       $url = array_values($match)[0];
 
