@@ -217,7 +217,7 @@ class StatusTwitter {
       $file = file_save_data($image, 'public://' . substr($media->media_url, strrpos($media->media_url, '/') + 1), FILE_EXISTS_REPLACE);
       $images[] = $file->id();
     }
-    if(!empty($data->extended_entities->media[0]->video_info->variants)) {
+    if (!empty($data->extended_entities->media[0]->video_info->variants)) {
       $z = null;
       $vidUrl = null;
       $bitrate = new \stdClass();
@@ -260,6 +260,7 @@ class StatusTwitter {
   }
 
   private function processTerms($data) {
+
     $terms = new \stdClass();
     $terms->tags = [];
     $terms->users = [];
@@ -272,54 +273,76 @@ class StatusTwitter {
         ->execute();
 
       if (count($term) < 1) {
-        $term = Term::create(['name' => $data->user->screen_name, 'vid' => 'twitter_user']);
+        $term = Term::create([
+          'name' => $data->user->screen_name,
+          'vid' => 'twitter_user',
+          'field_count' => 1
+        ]);
         if ($term->save()) {
           $terms->username = $term->id();
+          if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
+            \Drupal\heartbeat\Entity\Heartbeat::newTermUsage($term->id());
+          }
         } else {
-          \Drupal::logger('StatusTwitter')->warning('Could not save term with name %name', array('%name' => $data->user->screen_name));
+          \Drupal::logger('StatusTwitter')
+            ->warning('Could not save term with name %name', array('%name' => $data->user->screen_name));
         }
       } else {
         $terms->username = array_values($term)[0];
-      }
-    }
-    $term = null;
-    foreach($data->entities->hashtags as $key => $h) {
-      $term = \Drupal::entityQuery('taxonomy_term')
-        ->condition('name', $h->text)
-        ->condition('vid', 'twitter')
-        ->execute();
-
-      if (count($term) < 1) {
-        $term = Term::create(['name' => $h->text, 'vid' => 'twitter']);
-        if ($term->save()) {
-          $terms->tags[] = $term->id();
-        } else {
-          \Drupal::logger('StatusTwitter')->warning('Could not save term with name %name', array('%name' => $h->text));
+        if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
+          \Drupal\heartbeat\Entity\Heartbeat::updateTermUsage(array_values($term)[0], 'twitter_user');
         }
-      } else {
-        $terms->tags[] = array_values($term)[0];
       }
-    }
-    $term = null;
-    foreach($data->entities->user_mentions as $u) {
-      $term = \Drupal::entityQuery('taxonomy_term')
-        ->condition('name', $u->screen_name)
-        ->condition('vid', 'twitter_user')
-        ->execute();
+      $term = NULL;
+      foreach ($data->entities->hashtags as $key => $h) {
+        $term = \Drupal::entityQuery('taxonomy_term')
+          ->condition('name', $h->text)
+          ->condition('vid', 'twitter')
+          ->execute();
 
-      if (count($term) < 1) {
-        $term = Term::create(['name' => $u->screen_name, 'vid' => 'twitter_user']);
-        if ($term->save()) {
-          $terms->users[] = $term->id();
+        if (count($term) < 1) {
+          $term = Term::create(['name' => $h->text, 'vid' => 'twitter', 'field_count' => 1]);
+          if ($term->save()) {
+            $terms->tags[] = $term->id();
+            if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
+              \Drupal\heartbeat\Entity\Heartbeat::newTermUsage($term->id());
+            }
+          } else {
+            \Drupal::logger('StatusTwitter')
+              ->warning('Could not save term with name %name', array('%name' => $h->text));
+          }
         } else {
-          \Drupal::logger('StatusTwitter')->warning('Could not save term with name %name', array('%name' => $u->screen_name));
+          $terms->tags[] = array_values($term)[0];
+          if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
+            \Drupal\heartbeat\Entity\Heartbeat::updateTermUsage(array_values($term)[0], 'twitter');
+          }
         }
-      } else {
-        $terms->users[] = array_values($term)[0];
+      }
+      $term = NULL;
+      foreach ($data->entities->user_mentions as $u) {
+        $term = \Drupal::entityQuery('taxonomy_term')
+          ->condition('name', $u->screen_name)
+          ->condition('vid', 'twitter_user')
+          ->execute();
+
+        if (count($term) < 1) {
+          $term = Term::create([
+            'name' => $u->screen_name,
+            'vid' => 'twitter_user'
+          ]);
+          if ($term->save()) {
+            $terms->users[] = $term->id();
+          } else {
+            \Drupal::logger('StatusTwitter')
+              ->warning('Could not save term with name %name', array('%name' => $u->screen_name));
+          }
+        } else {
+          $terms->users[] = array_values($term)[0];
+        }
+
       }
     }
-
-    return($terms);
+    return ($terms);
   }
 }
 
