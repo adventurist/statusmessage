@@ -10,6 +10,7 @@ namespace Drupal\statusmessage;
 
 
 use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * @property \Drupal\statusmessage\MarkupGenerator generator
@@ -23,11 +24,13 @@ class StatusHeartPost implements SharedContentInterface {
 
   protected $generator;
 
+  protected $tags;
+
   /**
    * StatusHeartPost constructor.
    * @param $url
    */
-  public function __construct($url, $message = null) {
+  public function __construct($url, $message = NULL) {
     $this->url = $url;
     $this->message = $message;
     $this->generator = new MarkupGenerator();
@@ -43,6 +46,10 @@ class StatusHeartPost implements SharedContentInterface {
 
       if ($fid = $this->getMedia()) {
         $node->set('field_image', $fid);
+      }
+
+      if (!empty($this->tags)) {
+        $node->set('field_tags', $this->tags);
       }
 
       if ($node->save()) {
@@ -64,6 +71,10 @@ class StatusHeartPost implements SharedContentInterface {
       $newTag = $tag;
     }
 
+    if ($this->message) {
+      $this->tags = self::parseHashtags($this->message);
+    }
+
     return $this->generator->getTags();
 
   }
@@ -71,16 +82,34 @@ class StatusHeartPost implements SharedContentInterface {
 
   private function setNodeData() {
 
+    $append = FALSE;
+
     $node = Node::create([
       'type' => 'heartpost',
       'title' => $this->generator->getTitle(),
       'status' => 1,
     ]);
 
-    if ($this->message) {
-      $node->set('body', ['value' => '<div class="status-heartpost"> ' . $this->message . '</div>']);
+
+    if (strlen($this->generator->getDescription()) <= 255) {
+      $node->set('field_description', [
+        'value' => '<div class="status-heartpost-description"> ' . $this->generator->getDescription() . '</div>',
+        'format' => 'full_html'
+      ]);
     }
-    $node->set('field_description', ['value' => '<div class="status-heartpost-description"> ' . $this->generator->getDescription() . '</div>', 'format' =>'full_html']);
+    else {
+      $append = TRUE;
+    }
+
+    if ($this->message) {
+      $this->message = $append ? $this->message . ' ' . PHP_EOL . $this->generator->getDescription() : $this->message;
+
+      $node->set('body', [
+        'value' => '<div class="status-heartpost"> ' . $this->message . ' </div>',
+        'format' => 'full_html'
+      ]);
+    }
+
 
     return $node;
 
@@ -100,4 +129,47 @@ class StatusHeartPost implements SharedContentInterface {
   }
 
 
+  public static function parseHashtags($message) {
+
+    $tids = array();
+    $i = 0;
+    $tagsArray = explode('#', $message);
+    $num = count($tagsArray);
+
+    if ($num > 1) {
+      unset($tagsArray[0]);
+    }
+
+    foreach ($tagsArray as $hashtag) {
+      if ($i === $num - 1) {
+        $lastTagArray = explode(' ', $hashtag);
+        if (strlen($lastTagArray[1]) > 1) {
+          $hashtag = trim($lastTagArray[0]);
+        }
+      }
+        $tid = \Drupal::entityQuery("taxonomy_term")
+          ->condition("name", trim($hashtag))
+          ->condition('vid', [
+            'twitter',
+            'tags',
+            'kekistan'
+          ], 'IN')
+          ->execute();
+
+        if (count($tid) > 0) {
+          $tids[] = array_values($tid)[0];
+        } else {
+          $term = Term::create([
+            'name' => trim($hashtag),
+            'vid' => 'tags',
+            'field_count' => 1
+          ]);
+          if ($term->save()) {
+            $tids[] = $term->id();
+          }
+        }
+        $i++;
+      }
+    return $tids;
+  }
 }

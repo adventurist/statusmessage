@@ -238,7 +238,7 @@ $stophere = null;
           $nid = $statusYoutube->generateNode();
 
         } else {
-          $statusHeartPost = new StatusHeartPost($url);
+          $statusHeartPost = new StatusHeartPost($url, $message);
           $nid = $statusHeartPost->sendRequest();
 
         }
