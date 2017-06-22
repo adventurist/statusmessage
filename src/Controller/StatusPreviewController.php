@@ -48,7 +48,9 @@ class StatusPreviewController extends ControllerBase {
       $url = \Drupal::request()->get('data');
 
       $generator = new MarkupGenerator();
-
+      if (!strpos($url, 'http://')) {
+        $url = 'http://' . $url;
+      }
       if ($generator->parseMarkup($url)) {
 
         $preview = $generator->generatePreview();

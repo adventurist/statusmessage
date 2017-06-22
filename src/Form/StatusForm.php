@@ -239,7 +239,7 @@ $stophere = null;
 
         } else {
           $statusHeartPost = new StatusHeartPost($url);
-          $statusHeartPost->sendRequest();
+          $nid = $statusHeartPost->sendRequest();
 
         }
 
