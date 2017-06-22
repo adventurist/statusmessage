@@ -11,6 +11,8 @@ namespace Drupal\statusmessage;
 
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\heartbeat\Entity\Heartbeat;
+
 
 /**
  * @property \Drupal\statusmessage\MarkupGenerator generator
@@ -157,6 +159,9 @@ class StatusHeartPost implements SharedContentInterface {
           ->execute();
 
         if (count($tid) > 0) {
+          if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
+            \Drupal\heartbeat\Entity\Heartbeat::updateTermUsage(array_values($tid)[0], 'tags');
+          }
           $tids[] = array_values($tid)[0];
         } else {
           $term = Term::create([
@@ -166,6 +171,9 @@ class StatusHeartPost implements SharedContentInterface {
           ]);
           if ($term->save()) {
             $tids[] = $term->id();
+            if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
+              \Drupal\heartbeat\Entity\Heartbeat::newTermUsage($term->id());
+            }
           }
         }
         $i++;
