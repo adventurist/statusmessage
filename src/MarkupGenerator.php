@@ -42,7 +42,8 @@ class MarkupGenerator implements Parser {
    * @return mixed
    */
   public function parseMarkup($url) {
-    $this->parsedMarkup = Embed::create('http://' . $url);
+    $url = strpos($url, 'http://') ? 'http://' . $url : $url;
+    $this->parsedMarkup = Embed::create($url);
     return true;
   }
 
@@ -65,4 +66,43 @@ class MarkupGenerator implements Parser {
     return $templateCreator->getPreview();
 
   }
+
+
+  /**
+   * @return mixed
+   */
+
+  public function getImages() {
+    return $this->parsedMarkup->images;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getImage() {
+    return $this->parsedMarkup->image;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getTitle() {
+    return $this->parsedMarkup->title;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getDescription() {
+    return $this->parsedMarkup->description;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getTags() {
+    return $this->parsedMarkup->tags;
+  }
+
+
 }

@@ -10,6 +10,7 @@ use Drupal\statusmessage\MarkupGenerator;
 use Drupal\statusmessage\StatusService;
 use Drupal\statusmessage\StatusTypeService;
 use Drupal\statusmessage\Ajax\ClientCommand;
+use Drupal\statusmessage\StatusHeartPost;
 use Drupal\statusmessage\StatusTwitter;
 use Drupal\statusmessage\StatusYoutube;
 use Drupal\Core\Ajax\AjaxResponse;
@@ -220,23 +221,28 @@ $stophere = null;
     $message = $form_state->getValue('message');
     if (strlen(trim($message)) > 1) {
       preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $message, $match);
-      if (strpos($message, 'twitter')) {
-        if ($this->markupgenerator !== NULL && !empty($match) && array_values($match)[0] !== NULL) {
-          $url = is_array(array_values($match)[0]) ? array_values(array_values($match)[0])[0] : array_values($match)[0];
+
+      if ($this->markupgenerator !== NULL && !empty($match) && array_values($match)[0] !== NULL) {
+
+        $url = is_array(array_values($match)[0]) ? array_values(array_values($match)[0])[0] : array_values($match)[0];
+
+        if (strpos($message, 'twitter')) {
+
+
           $statusTwitter = new StatusTwitter($url);
           $nid = $statusTwitter->sendRequest();
-//        return $nid;
+
+        } else if (strpos($message, 'youtube') || strpos($message, 'youtu.be')) {
+
+          $statusYoutube = new StatusYoutube($url);
+          $nid = $statusYoutube->generateNode();
+
+        } else {
+          $statusHeartPost = new StatusHeartPost($url);
+          $statusHeartPost->sendRequest();
+
         }
-      }
-      else {
-        if (strpos($message, 'youtube') || strpos($message, 'youtu.be')) {
-          if ($this->markupgenerator !== NULL && !empty($match) && array_values($match)[0] !== NULL) {
-            $url = is_array(array_values($match)[0]) ? array_values(array_values($match)[0])[0] : array_values($match)[0];
-            $statusYoutube = new StatusYoutube($url);
-            $nid = $statusYoutube->generateNode();
-//        return $nid;
-          }
-        }
+
       }
 
       if ($nid === NULL && !empty($this->statusTypeService)) {
