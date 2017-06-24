@@ -4,8 +4,8 @@ namespace Drupal\statusmessage\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\heartbeat\Ajax\ClearPreviewCommand;
 use Drupal\statusmessage\Entity\Status;
-use Drupal\statusmessage\ClientGeneratorService;
 use Drupal\statusmessage\MarkupGenerator;
 use Drupal\statusmessage\StatusService;
 use Drupal\statusmessage\StatusTypeService;
@@ -284,6 +284,11 @@ $stophere = null;
 //              $feedConfig = $feedConfig = $configManager->get('heartbeat_feed.settings');
         $response = new AjaxResponse();
         $response->addCommand(new SelectFeedCommand($feedConfig->get('message')));
+        $response->addCommand(new ClearPreviewCommand(true));
+
+        $this->clearFormInput($form_state);
+        $form['message']['#default'] = '';
+        $form['message']['#value'] = '';
 
         return $response;
       }
@@ -302,5 +307,32 @@ $stophere = null;
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
   }
+
+  /**
+   * Clears form input.
+   *
+   * @param array $form
+   *   The form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  protected function clearFormInput(FormStateInterface $form_state) {
+    // Replace the form entity with an empty instance.
+    // Clear user input.
+    $input = $form_state->getUserInput();
+    // We should not clear the system items from the user input.
+    $clean_keys = $form_state->getCleanValueKeys();
+    $clean_keys[] = 'ajax_page_state';
+    foreach ($input as $key => $item) {
+      if (!in_array($key, $clean_keys) && substr($key, 0, 1) !== '_') {
+        unset($input[$key]);
+      }
+    }
+    $form_state->setUserInput($input);
+    // Rebuild the form state values.
+    $form_state->setRebuild();
+    $form_state->setStorage([]);
+  }
+
 }
 

@@ -49,54 +49,14 @@
         }
       }
 
-      // function buildPreview(doc) {
-      //   var imgs = doc.querySelectorAll('img');
-      //   var metaTags = doc.querySelectorAll('meta');
-      //   var title = doc.querySelector('title');
-      //   var markup;
-      //   var description;
-      //   var previewImage = null;
-      //
-      //   imgs.forEach(function (img) {
-      //     if (previewImage === null) {
-      //       var imgClasses = img.classList;
-      //
-      //       if (imgClasses.value.toLowerCase().indexOf('logo') || img.alt.toLowerCase().indexOf('logo') || img.title.toLowerCase().indexOf('logo') || img.src.toLowerCase().indexOf('logo')) {
-      //         previewImage = img;
-      //       }
-      //     }
-      //   });
-      //
-      //   metaTags.forEach(function (metaTag) {
-      //     if (metaTag.name == 'description') {
-      //       description = metaTag.content;
-      //
-      //     }
-      //   });
-      //
-      //   console.dir(description);
-      //   console.dir(previewImage.src);
-      //   var outer = document.createElement('div');
-      //   outer.className = 'statusmessage-preview';
-      //   // var closeButton = document.createElement('button');
-      //   // closeButton.className('statusmessage-preview-close');
-      //   // closeButton.innerHTML('✖');
-      //   var titlemarkup = document.createElement('h4');
-      //   titlemarkup.innerHTML = title.innerHTML;
-      //   var descmarkup = document.createElement('p');
-      //   descmarkup.innerText = description;
-      //   var imgmarkup = document.createElement('img');
-      //   imgmarkup.src = previewImage.src;
-      //
-      //
-      //   var wrapper = document.createElement('div');
-      //   wrapper.appendChild(titlemarkup);
-      //   wrapper.appendChild(descmarkup);
-      //   wrapper.appendChild(imgmarkup);
-      //   // wrapper.appendChild(closeButton);
-      //
-      //   return wrapper;
-      // }
+      Drupal.AjaxCommands.prototype.clearPreview = function(ajax, response, status) {
+        if (response.clear == true) {
+          let oldPreviewIframe = document.querySelector('.statusmessage-preview-iframe');
+          if (oldPreviewIframe !== null) {
+            oldPreviewIframe.parentNode.removeChild(oldPreviewIframe);
+          }
+        }
+      }
 
     }
   };

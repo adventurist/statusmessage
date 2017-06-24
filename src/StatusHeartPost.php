@@ -98,8 +98,7 @@ class StatusHeartPost implements SharedContentInterface {
         'value' => '<div class="status-heartpost-description"> ' . $this->generator->getDescription() . '</div>',
         'format' => 'full_html'
       ]);
-    }
-    else {
+    } else {
       $append = TRUE;
     }
 
@@ -121,8 +120,13 @@ class StatusHeartPost implements SharedContentInterface {
   private function getMedia() {
 
     if ($this->generator->getImage()) {
-      $mainImage = file_get_contents($this->generator->getImage());
-      $file = file_save_data($mainImage, 'public://' . substr($this->generator->getImage(), strrpos($this->generator->getImage(), '/') + 1), FILE_EXISTS_REPLACE);
+
+      $ext = strtolower(pathinfo($this->generator->getImage(), PATHINFO_EXTENSION));
+      $ext = strpos($ext, '?') ? substr($ext, 0, strpos($ext, '?')) : $ext;
+      $fileUrl = strlen($ext) > 0 ? substr($this->generator->getImage(), 0, strpos($this->generator->getImage(), $ext)) . $ext : $this->generator->getImage();
+
+      $mainImage = file_get_contents($fileUrl);
+      $file = file_save_data($mainImage, 'public://' . substr($fileUrl, strrpos($this->generator->getImage(), '/') + 1), FILE_EXISTS_REPLACE);
 
       return $file->id();
     }
@@ -138,9 +142,7 @@ class StatusHeartPost implements SharedContentInterface {
     $tagsArray = explode('#', $message);
     $num = count($tagsArray);
 
-    if ($num > 1) {
-      unset($tagsArray[0]);
-    }
+    unset($tagsArray[0]);
 
     foreach ($tagsArray as $hashtag) {
       if ($i === $num - 1) {
