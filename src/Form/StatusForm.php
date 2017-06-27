@@ -82,7 +82,7 @@ class StatusForm extends FormBase {
         'event' => 'change, paste, keyup',
         'callback' => '::generatePreview',
         'progress' => array(
-          'type' => 'throbber',
+          'type' => 'none',
           'message' => t('Generating preview'),
         ),
       ],
@@ -234,10 +234,10 @@ $stophere = null;
 
         } else if (strpos($message, 'youtube') || strpos($message, 'youtu.be')) {
 
-          $statusYoutube = new StatusYoutube($url);
+          $statusYoutube = new StatusYoutube($url, $message);
           $nid = $statusYoutube->generateNode();
 
-        } else {
+        } else if ($url !== null) {
           $statusHeartPost = new StatusHeartPost($url, $message);
           $nid = $statusHeartPost->sendRequest();
 

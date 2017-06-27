@@ -24,7 +24,7 @@
                 let markup = document.createElement('div');
                 markup.innerHTML = response.data;
 
-                let statusBlock = document.getElementById('block-statusblock');
+                let statusTextBox = document.getElementById('edit-message');
                 let oldPreviewIframe = document.querySelector('.statusmessage-preview-iframe');
 
                 if (oldPreviewIframe !== null) {
@@ -33,7 +33,7 @@
                 }
                 previewIframe = document.createElement('iframe');
                 previewIframe.classList.add('statusmessage-preview-iframe');
-                statusBlock.appendChild(previewIframe);
+                statusTextBox.parentNode.appendChild(previewIframe);
                 previewIframe.contentWindow.document.open();
                 previewIframe.contentWindow.document.appendChild(markup);
                 previewIframe.contentWindow.document.close();
@@ -58,6 +58,13 @@
         }
       }
 
+
+      let statusPostButton = document.getElementById('edit-post');
+
+      statusPostButton.addEventListener('click', function() {
+        let textBox = document.getElementById('edit-message');
+        textBox.value = "";
+      })
     }
   };
 

@@ -165,8 +165,8 @@ class StatusTwitter {
     $terms = $this->processTerms($data);
 
     if (!empty($data->entities->urls)) {
-      foreach ($data->entities->urls as $url)  {
-        $links[] = $url->display_url;
+      foreach ($data->entities->urls as $url) {
+        $links[] = !strpos($url->display_url, 'http') ? 'http://' . $url->display_url : $url->display_url;
       }
     }
     //Check for attached media and create a directory for saving
