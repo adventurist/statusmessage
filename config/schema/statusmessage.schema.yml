@@ -19,12 +19,12 @@ instagram_api.config:
   type: config_object
   label: 'Credentials to authenticate with Instagram API'
   mapping:
-    oauth_access_token:
+    client_id:
           type: text
-          label: 'Access Token'
-    oauth_access_token_secret:
+          label: 'Client ID'
+    client_secret:
           type: text
-          label: 'Access Token Secret'
+          label: 'Client Secret'
     consumer_key:
           type: text
           label: 'Consumer key'

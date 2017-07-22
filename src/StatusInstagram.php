@@ -9,9 +9,9 @@
 namespace Drupal\statusmessage;
 
 //require_once DRUPAL_ROOT .'/vendor/autoload.php';
-require_once __DIR__ . './../includes/TwitterAPIExchange.php';
+//require_once __DIR__ . './../includes/InstagramAPIExchange.php';
 
-use TwitterAPIExchange;
+use InstagramAPIExchange;
 use Drupal\statusmessage\Entity;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\node\Entity\Node;
@@ -19,7 +19,7 @@ use Drupal\file\Entity\File;
 //use Drupal\Core\File;
 
 
-class StatusTwitter {
+class StatusInstagram {
 
   protected $oauthAccessToken;
   protected $oauthAccessTokenSecret;
@@ -27,10 +27,10 @@ class StatusTwitter {
   protected $consumerSecret;
   protected $parameter;
 
-  private $twitterConfig;
+  private $instagramConfig;
 
   public function __construct($parameter) {
-    $this->twitterConfig = \Drupal::config('twitter_api.settings');
+    $this->instagramConfig = \Drupal::config('instagram_api.settings');
     $this->parameter = $parameter;
   }
 
@@ -96,7 +96,7 @@ class StatusTwitter {
   }
 
   private function getApiStatusParameter() {
-    return 'https://api.twitter.com/1.1/statuses/show.json';
+    return 'https://api.Instagram.com/1.1/statuses/show.json';
   }
 
 
@@ -105,15 +105,15 @@ class StatusTwitter {
     $twid = $this->parseUrl($url);
 
     $settings = [
-      'oauth_access_token' => $this->twitterConfig->get('oauth_access_token'),
-      'oauth_access_token_secret' => $this->twitterConfig->get('oauth_access_token_secret'),
-      'consumer_key' => $this->twitterConfig->get('consumer_key'),
-      'consumer_secret' => $this->twitterConfig->get('consumer_secret'),
+      'oauth_access_token' => $this->instagramConfig->get('oauth_access_token'),
+      'oauth_access_token_secret' => $this->instagramConfig->get('oauth_access_token_secret'),
+      'consumer_key' => $this->instagramConfig->get('consumer_key'),
+      'consumer_secret' => $this->instagramConfig->get('consumer_secret'),
     ];
 
-    $twitterApi = new TwitterAPIExchange($settings);
+    $instagramApi = new InstagramAPIExchange($settings);
     $getField = '?id=' . $twid . '&tweet_mode=extended';
-    return $twitterApi
+    return $instagramApi
       ->setGetfield($getField)
       ->buildOauth($this->getApiStatusParameter(), 'GET');
   }
@@ -268,13 +268,13 @@ class StatusTwitter {
     if ($data->user->screen_name) {
       $term = \Drupal::entityQuery('taxonomy_term')
         ->condition('name', $data->user->screen_name)
-        ->condition('vid', 'twitter_user')
+        ->condition('vid', 'instagram_user')
         ->execute();
 
       if (count($term) < 1) {
         $term = Term::create([
           'name' => $data->user->screen_name,
-          'vid' => 'twitter_user',
+          'vid' => 'instagram_user',
           'field_count' => 1
         ]);
         if ($term->save()) {
@@ -283,37 +283,37 @@ class StatusTwitter {
             \Drupal\heartbeat\Entity\Heartbeat::newTermUsage($term->id());
           }
         } else {
-          \Drupal::logger('StatusTwitter')
+          \Drupal::logger('StatusInstagram')
             ->warning('Could not save term with name %name', array('%name' => $data->user->screen_name));
         }
       } else {
         $terms->username = array_values($term)[0];
         if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
-          \Drupal\heartbeat\Entity\Heartbeat::updateTermUsage(array_values($term)[0], 'twitter_user');
+          \Drupal\heartbeat\Entity\Heartbeat::updateTermUsage(array_values($term)[0], 'instagram_user');
         }
       }
       $term = NULL;
       foreach ($data->entities->hashtags as $key => $h) {
         $term = \Drupal::entityQuery('taxonomy_term')
           ->condition('name', $h->text)
-          ->condition('vid', 'twitter')
+          ->condition('vid', 'Instagram')
           ->execute();
 
         if (count($term) < 1) {
-          $term = Term::create(['name' => $h->text, 'vid' => 'twitter', 'field_count' => 1]);
+          $term = Term::create(['name' => $h->text, 'vid' => 'Instagram', 'field_count' => 1]);
           if ($term->save()) {
             $terms->tags[] = $term->id();
             if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
               \Drupal\heartbeat\Entity\Heartbeat::newTermUsage($term->id());
             }
           } else {
-            \Drupal::logger('StatusTwitter')
+            \Drupal::logger('StatusInstagram')
               ->warning('Could not save term with name %name', array('%name' => $h->text));
           }
         } else {
           $terms->tags[] = array_values($term)[0];
           if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
-            \Drupal\heartbeat\Entity\Heartbeat::updateTermUsage(array_values($term)[0], 'twitter');
+            \Drupal\heartbeat\Entity\Heartbeat::updateTermUsage(array_values($term)[0], 'Instagram');
           }
         }
       }
@@ -321,18 +321,18 @@ class StatusTwitter {
       foreach ($data->entities->user_mentions as $u) {
         $term = \Drupal::entityQuery('taxonomy_term')
           ->condition('name', $u->screen_name)
-          ->condition('vid', 'twitter_user')
+          ->condition('vid', 'instagram_user')
           ->execute();
 
         if (count($term) < 1) {
           $term = Term::create([
             'name' => $u->screen_name,
-            'vid' => 'twitter_user'
+            'vid' => 'instagram_user'
           ]);
           if ($term->save()) {
             $terms->users[] = $term->id();
           } else {
-            \Drupal::logger('StatusTwitter')
+            \Drupal::logger('StatusInstagram')
               ->warning('Could not save term with name %name', array('%name' => $u->screen_name));
           }
         } else {
