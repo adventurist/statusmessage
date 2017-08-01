@@ -126,14 +126,16 @@ class StatusHeartPost implements SharedContentInterface {
       for ($i = 0; $i < 10; $i++) {
         if (count($fids) < 6 && $images[$i]['width'] > 400) {
           $ext = strtolower(pathinfo($images[$i]['url'], PATHINFO_EXTENSION));
+
           if (!$this->verifyExtension($ext)) {
             $ext = explode($ext, $images[$i]['url']);
             $ext = count($ext) > 1 ? $ext[1] : $ext[0];
           }
           $ext = strpos($ext, '?') ? substr($ext, 0, strpos($ext, '?')) : $ext;
-          $fileUrl = strlen($ext) > 0 ? substr($images[$i]['url'], 0, strpos($images[$i]['url'], $ext)) . $ext : $images[$i]['url'];
-          $data = file_get_contents($fileUrl);
-          $file = file_save_data($data, 'public://' . substr($fileUrl, strrpos($images[$i]['url'], '/') + 1), FILE_EXISTS_REPLACE);
+          $fileName = strlen($ext) > 0 ? substr($images[$i]['url'], 0, strpos($images[$i]['url'], $ext)) . $ext : $images[$i]['url'];
+
+          $data = file_get_contents($images[$i]['url']);
+          $file = file_save_data($data, 'public://' . substr($fileName, strrpos($fileName, '/') + 1), FILE_EXISTS_REPLACE);
           $fids[] = $file->id();
         }
       }
