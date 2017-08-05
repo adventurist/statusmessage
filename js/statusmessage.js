@@ -68,9 +68,26 @@
       statusPostButton.addEventListener('click', function() {
         let textBox = document.getElementById('edit-message');
         textBox.value = "";
-      })
+      });
+
+
+
+
+
+
     }
   };
+
+  // let uploadButton = $('#edit-media-upload');
+  // uploadButton.hide();
+  // $('.status-media-upload').click(function() {
+  //   console.log('This is firing');
+  //   if (uploadButton.is(':visible')) {
+  //     uploadButton.hide();
+  //   } else {
+  //     uploadButton.show();
+  //   }
+  // });
 
 })(jQuery, Drupal, drupalSettings);
 

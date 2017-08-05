@@ -63,6 +63,7 @@ class StatusForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     /* @var $entity \Drupal\statusmessage\Entity\Status */
 
+
     $form['#attached']['library'][] = 'statusmessage/status';
 
     if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
@@ -88,18 +89,31 @@ class StatusForm extends FormBase {
       ],
     );
 
-//    $form['mediatabs'] = [
-//      '#type' => 'radios',
-////      '#description' => $this->t('User selectable feeds'),
-//      '#options' => $this->mediaTabs,
-////      '#ajax' => [
-////        'callback' => '::updateFeed',
-//////        'event' => 'onclick',
-////        'progress' => array(
-////          'type' => 'none',
-//////        'message' => t('Fetching feed'),
-////        ),
-//      ];
+    $form['mediatabs'] = [
+      '#type' => 'radios',
+//      '#description' => $this->t('User selectable feeds'),
+      '#prefix' => '<div class="status-media-upload"></div>',
+
+      '#options' => $this->mediaTabs,
+      '#theme' => 'status-form-element',
+//      '#ajax' => [
+//        'callback' => '::updateFeed',
+////        'event' => 'onclick',
+//        'progress' => array(
+//          'type' => 'none',
+////        'message' => t('Fetching feed'),
+//        ),
+      ];
+
+    $form['media'] = [
+      '#type' => 'managed_file',
+      '#upload_location' => 'public://statusmessage/',
+      '#states' => array(
+        'visible' => array(
+          ':input[name="File_type"]' => array('value' => t('Upload Your File')),
+        ),
+      ),
+    ];
 
 
     $form['post'] = array(
@@ -180,45 +194,14 @@ $stophere = null;
       $response->addCommand(new ClientCommand($url[0]));
 
       return $response;
-
-
     }
-
-//    if (!empty($this->statusTypeService)) {
-//      foreach ($this->statusTypeService->loadAll() as $type) {
-//        if (!$type->getMedia()) {
-//
-//          $userViewed = \Drupal::routeMatch()->getParameters()->get('user') === null ? \Drupal::currentUser()->id() : \Drupal::routeMatch()->getParameters()->get('user')->id();
-//
-//          if ($userViewed !== null) {
-//
-//            $statusEntity = Status::create([
-//              'type' => $type->id(),
-//              'uid' => \Drupal::currentUser()->id(),
-//              'recipient' => $userViewed
-//            ]);
-//
-//            $statusEntity->setMessage($form_state->getValue('message'));
-//            $statusEntity->save();
-//
-//            if (\Drupal::service('module_handler')->moduleExists('heartbeat')) {
-//
-////              $configManager = \Drupal::service('config.manager');
-//              $feedConfig = \Drupal::config('heartbeat_feed.settings');
-////              $feedConfig = $feedConfig = $configManager->get('heartbeat_feed.settings');
-//              $response = new AjaxResponse();
-//              $response->addCommand(new SelectFeedCommand($feedConfig->get('message')));
-//
-//              return $response;
-//            }
-//            break;
-//          }
-//        }
-//      }
-//    }
+    return null;
   }
+
+
   public function statusAjaxSubmit(array &$form, FormStateInterface $form_state) {
     $message = $form_state->getValue('message');
+    $file = $form_state->getValue('media');
     if (strlen(trim($message)) > 1) {
       preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $message, $match);
 
