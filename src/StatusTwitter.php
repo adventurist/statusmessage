@@ -209,6 +209,7 @@ class StatusTwitter {
       $userImage = file_get_contents($data->user->profile_image_url_https);
       $file = file_save_data($userImage, 'public://' . substr($data->user->profile_image_url_https, strrpos($data->user->profile_image_url_https, '/') + 1), FILE_EXISTS_REPLACE);
 
+
       $userImage = $file->id();
     }
     foreach($data->extended_entities->media as $media)  {

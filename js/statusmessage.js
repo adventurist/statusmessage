@@ -35,11 +35,16 @@
                   oldPreviewIframe.parentNode.removeChild(oldPreviewIframe);
 
                 }
+                var cssLink = document.createElement("link")
+                cssLink.href = "/modules/statusmessage/css/preview.css";
+                cssLink .rel = "stylesheet";
+                cssLink .type = "text/css";
                 previewIframe = document.createElement('iframe');
                 previewIframe.classList.add('statusmessage-preview-iframe');
                 statusTextBox.parentNode.appendChild(previewIframe);
                 previewIframe.contentWindow.document.open();
                 previewIframe.contentWindow.document.appendChild(markup);
+                previewIframe.contentWindow.document.documentElement.appendChild(cssLink);
                 previewIframe.contentWindow.document.close();
               }
             }

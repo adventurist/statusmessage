@@ -256,7 +256,6 @@ class Status extends ContentEntityBase implements StatusInterface {
       ->setRevisionable(TRUE)
       ->setDisplayOptions('view', array(
         'label' => 'above',
-        'type' => 'full_html',
         'weight' => -4,
       ));
 

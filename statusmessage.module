@@ -38,8 +38,30 @@ function statusmessage_theme() {
     'variables' => ['content' => NULL],
     'file' => 'status.page.inc',
   ];
+//  $theme['status-form'] = [
+//    'variables' => array(
+//      'messages' => NULL,
+//      'zilla' => 2,
+//    )
+//  ];
+//  $theme['status-form-element'] = [
+//    'render element' => 'element'
+//  ];
+//    'template' => 'status-form',
+
+
   return $theme;
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+//function statusmessage_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+//  if ($form_id == 'status_form') {
+//    $form['#theme'] = ['status-form'];
+//  }
+//
+//}
 
 /**
 * Implements hook_theme_suggestions_HOOK().

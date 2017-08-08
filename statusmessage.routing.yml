@@ -40,3 +40,20 @@ statusmessage.instagram_api_form:
   requirements:
     _access: 'TRUE'
 
+
+statusmessage.content_controller_info:
+  path: '/statusmessage/info'
+  defaults:
+    _controller: '\Drupal\statusmessage\Controller\ContentController::info'
+    _title: 'info'
+  requirements:
+    _permission: 'access content'
+
+
+statusmessage.delete:
+  path: '/statusmessage/delete'
+  defaults:
+    _controller: '\Drupal\statusmessage\Controller\ContentController::deleteStatusMessages'
+    _title: 'info'
+  requirements:
+    _permission: 'access content'
