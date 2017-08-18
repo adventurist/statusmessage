@@ -67,3 +67,8 @@
 #edit-mediatabs + #ajax-wrapper {
   display: inline-block;
 }
+
+.heartbeat-message .comment-body a.status-comment-share {
+  text-decoration: none;
+  color: #333;
+}

@@ -197,7 +197,6 @@ class StatusForm extends FormBase {
     return null;
   }
 
-
   public function statusAjaxSubmit(array &$form, FormStateInterface $form_state) {
     $message = $form_state->getValue('message');
     $file = $form_state->getValue('media');
@@ -239,6 +238,8 @@ class StatusForm extends FormBase {
               'uid' => \Drupal::currentUser()->id(),
               'recipient' => $userViewed
             ]);
+
+            StatusHeartPost::parseHashtags($message);
 
             if ($type->getMedia() && $file !== null) {
               $statusEntity->set('field_image', array_values($file)[0]);
@@ -308,6 +309,58 @@ class StatusForm extends FormBase {
     // Rebuild the form state values.
     $form_state->setRebuild();
     $form_state->setStorage([]);
+  }
+
+
+
+  public static function parseHashtags($message) {
+
+    $tids = array();
+    $i = 0;
+    $tagsArray = explode('#', $message);
+
+    unset($tagsArray[0]);
+
+    $num = count($tagsArray);
+
+
+    foreach ($tagsArray as $hashtag) {
+      if ($i === $num - 1) {
+        $lastTagArray = explode(' ', $hashtag);
+        if (strlen($lastTagArray[1]) > 1) {
+          $hashtag = trim($lastTagArray[0]);
+        }
+      }
+      $tid = \Drupal::entityQuery("taxonomy_term")
+        ->condition("name", trim($hashtag))
+        ->condition('vid', [
+          'twitter',
+          'tags',
+          'kekistan'
+        ], 'IN')
+        ->execute();
+
+      if (count($tid) > 0) {
+        if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
+          \Drupal\heartbeat\Entity\Heartbeat::updateTermUsage(array_values($tid)[0], 'tags');
+        }
+        $tids[] = array_values($tid)[0];
+      } else {
+        $term = Term::create([
+          'name' => trim($hashtag),
+          'vid' => 'tags',
+          'field_count' => 1
+        ]);
+        if ($term->save()) {
+          $tids[] = $term->id();
+          if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
+            \Drupal\heartbeat\Entity\Heartbeat::newTermUsage($term->id());
+          }
+        }
+      }
+      $i++;
+    }
+    return $tids;
   }
 
 }

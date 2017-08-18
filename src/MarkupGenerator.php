@@ -12,7 +12,7 @@ use Drupal\statusmessage\TemplateCreator;
  */
 class MarkupGenerator implements Parser {
 
-  private $match;
+  public $match;
 
   public $parsedMarkup;
 
@@ -34,7 +34,8 @@ class MarkupGenerator implements Parser {
    * @return mixed
    */
   public function validateUrl($text) {
-    return preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $text, $this->match);
+    preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $text, $this->match);
+    return $this->match;
   }
 
   /**
@@ -42,7 +43,8 @@ class MarkupGenerator implements Parser {
    * @return mixed
    */
   public function parseMarkup($url) {
-    $url = strpos($url, 'http://') ? 'http://' . $url : $url;
+    $url = strpos($url, 'http') ? 'http://' . $url : $url;
+    $url = !is_array($url) ? $url : array_values($url)[0];
     $this->parsedMarkup = Embed::create($url);
     return true;
   }
