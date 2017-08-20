@@ -256,9 +256,12 @@ class StatusForm extends FormBase {
 
       if (\Drupal::service('module_handler')
           ->moduleExists('heartbeat') && ($nid !== NULL || $statusEntity !== NULL)) {
-//              $configManager = \Drupal::service('config.manager');
+        //these config settings provide the chosen "Feed" with which to reload the stream
+        //earlier in development, the implementation was centered around selectable feed
+        //types rather than filtering a single feed
+        //TODO decide on the use of feed selections
+        
         $feedConfig = \Drupal::config('heartbeat_feed.settings');
-//              $feedConfig = $feedConfig = $configManager->get('heartbeat_feed.settings');
         $response = new AjaxResponse();
         $response->addCommand(new SelectFeedCommand($feedConfig->get('message')));
         $response->addCommand(new ClearPreviewCommand(true));

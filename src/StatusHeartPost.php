@@ -9,6 +9,7 @@
 namespace Drupal\statusmessage;
 
 
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\heartbeat\Entity\Heartbeat;
@@ -117,13 +118,23 @@ class StatusHeartPost implements SharedContentInterface {
   }
 
 
-  private function getMedia()
-  {
-
+  private function getMedia() {
     $fids = array();
 
     if ($images = $this->generator->getImages()) {
-      for ($i = 0; $i < 10; $i++) {
+      $num = count($images) > 10 ? 10 : count($images);
+
+      for ($i = 0; $i < $num; $i++) {
+
+        if ( // Try to skip iterating over duplicate images
+          $i > 0 &&
+          $images[$i]['width'] === $images[$i - 1]['width'] &&
+          $images[$i]['height'] === $images[$i - 1]['height'] &&
+          $images[$i]['size'] === $images[$i - 1]['size']
+        ) {
+          continue;
+        }
+
         if (count($fids) < 6 && $images[$i]['width'] > 400) {
           $ext = strtolower(pathinfo($images[$i]['url'], PATHINFO_EXTENSION));
 
@@ -134,9 +145,12 @@ class StatusHeartPost implements SharedContentInterface {
           $ext = strpos($ext, '?') ? substr($ext, 0, strpos($ext, '?')) : $ext;
           $fileName = strlen($ext) > 0 ? substr($images[$i]['url'], 0, strpos($images[$i]['url'], $ext)) . $ext : $images[$i]['url'];
 
-          $data = file_get_contents($images[$i]['url']);
-          $file = file_save_data($data, 'public://' . substr($fileName, strrpos($fileName, '/') + 1), FILE_EXISTS_REPLACE);
-          $fids[] = $file->id();
+          if (UrlHelper::isValid($images[$i]['url'])) {
+
+            $data = file_get_contents($images[$i]['url']);
+            $file = file_save_data($data, 'public://' . substr($fileName, strrpos($fileName, '/') + 1), FILE_EXISTS_REPLACE);
+            $fids[] = $file->id();
+          }
         }
       }
     } else {
