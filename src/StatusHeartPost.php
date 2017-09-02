@@ -79,9 +79,7 @@ class StatusHeartPost implements SharedContentInterface {
     }
 
     return $this->generator->getTags();
-
   }
-
 
   private function setNodeData() {
 
@@ -93,15 +91,16 @@ class StatusHeartPost implements SharedContentInterface {
       'status' => 1,
     ]);
 
+    $description = strlen($this->generator->getDescription()) <= 207 ? $this->generator->getDescription() : substr($this->generator->getDescription(), 0, 206);
 
-    if (strlen($this->generator->getDescription()) <= 255) {
-      $node->set('field_description', [
-        'value' => '<div class="status-heartpost-description"> ' . $this->generator->getDescription() . '</div>',
-        'format' => 'full_html'
-      ]);
-    } else {
+    if (strlen($this->generator->getDescription()) > 207) {
       $append = TRUE;
     }
+
+    $node->set('field_description', [
+      'value' => '<div class="status-heartpost-description"> ' . $description . '</div>',
+      'format' => 'full_html'
+    ]);
 
     if ($this->message) {
       $this->message = $append ? $this->message . ' ' . PHP_EOL . $this->generator->getDescription() : $this->message;
