@@ -65,14 +65,21 @@
             oldPreviewIframe.parentNode.removeChild(oldPreviewIframe);
           }
         }
-      }
+      };
 
 
       let statusPostButton = document.getElementById('edit-post');
 
       statusPostButton.addEventListener('click', function() {
         let textBox = document.getElementById('edit-message');
-        textBox.value = "";
+        if (textBox.value.length === 0) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          alert('Enter a status message');
+        } else {
+          textBox.value = "";
+        }
       });
 
 
