@@ -5,6 +5,7 @@ namespace Drupal\statusmessage\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\heartbeat\Ajax\ClearPreviewCommand;
+use Drupal\heartbeat\Entity\Heartbeat;
 use Drupal\statusmessage\Entity\Status;
 use Drupal\statusmessage\MarkupGenerator;
 use Drupal\statusmessage\StatusService;
@@ -15,6 +16,7 @@ use Drupal\statusmessage\StatusTwitter;
 use Drupal\statusmessage\StatusYoutube;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\heartbeat\Ajax\SelectFeedCommand;
+use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
@@ -89,11 +91,24 @@ class StatusForm extends FormBase {
       ],
     );
 
+    $form['post'] = array(
+      '#type' => 'submit',
+      '#description' => 'Post',
+      '#value' => t('Post'),
+      '#ajax' => [
+        'callback' => '::statusAjaxSubmit',
+        'progress' => array(
+          'type' => 'throbber',
+          'message' => t('Posting Message'),
+        ),
+      ]
+
+    );
+    
     $form['mediatabs'] = [
       '#type' => 'radios',
 //      '#description' => $this->t('User selectable feeds'),
       '#prefix' => '<div class="status-media-upload"></div>',
-
       '#options' => $this->mediaTabs,
       '#theme' => 'status-form-element',
 //      '#ajax' => [
@@ -108,6 +123,7 @@ class StatusForm extends FormBase {
     $form['media'] = [
       '#type' => 'managed_file',
       '#upload_location' => 'public://statusmessage/',
+//      '#multiple' => TRUE,
       '#states' => array(
         'visible' => array(
           ':input[name="File_type"]' => array('value' => t('Upload Your File')),
@@ -115,20 +131,6 @@ class StatusForm extends FormBase {
       ),
     ];
 
-
-    $form['post'] = array(
-      '#type' => 'submit',
-      '#description' => 'Post',
-      '#value' => t('Post'),
-      '#ajax' => [
-        'callback' => '::statusAjaxSubmit',
-        'progress' => array(
-          'type' => 'throbber',
-          'message' => t('Posting Message'),
-          ),
-      ]
-
-    );
     return $form;
   }
 
@@ -221,7 +223,7 @@ class StatusForm extends FormBase {
         }
       }
 
-      if ($nid === NULL && !empty($this->statusTypeService)) {
+      if (null === $nid && !empty($this->statusTypeService)) {
         $sTypes = $this->statusTypeService->loadAll();
         foreach ($this->statusTypeService->loadAll() as $type) {
           $userViewed = \Drupal::routeMatch()
@@ -260,15 +262,15 @@ class StatusForm extends FormBase {
         //earlier in development, the implementation was centered around selectable feed
         //types rather than filtering a single feed
         //TODO decide on the use of feed selections
-        
+
         $feedConfig = \Drupal::config('heartbeat_feed.settings');
         $response = new AjaxResponse();
         $response->addCommand(new SelectFeedCommand($feedConfig->get('message')));
         $response->addCommand(new ClearPreviewCommand(true));
 
-        $this->clearFormInput($form_state);
-        $form['message']['#default'] = '';
-        $form['message']['#value'] = '';
+//        $this->clearFormInput($form_state);
+//        $form['message']['#default'] = '';
+//        $form['message']['#value'] = '';
 
         return $response;
       }
@@ -345,7 +347,7 @@ class StatusForm extends FormBase {
 
       if (count($tid) > 0) {
         if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
-          \Drupal\heartbeat\Entity\Heartbeat::updateTermUsage(array_values($tid)[0], 'tags');
+          Heartbeat::updateTermUsage(array_values($tid)[0], 'tags');
         }
         $tids[] = array_values($tid)[0];
       } else {
@@ -357,7 +359,7 @@ class StatusForm extends FormBase {
         if ($term->save()) {
           $tids[] = $term->id();
           if (\Drupal::moduleHandler()->moduleExists('heartbeat')) {
-            \Drupal\heartbeat\Entity\Heartbeat::newTermUsage($term->id());
+            Heartbeat::newTermUsage($term->id());
           }
         }
       }
