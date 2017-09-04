@@ -66,30 +66,29 @@
           }
         }
       };
-
-
-      let statusPostButton = document.getElementById('edit-post');
-
-      statusPostButton.addEventListener('click', function() {
-        let textBox = document.getElementById('edit-message');
-        if (textBox.value.length === 0) {
-          event.preventDefault();
-          event.stopPropagation();
-          event.stopImmediatePropagation();
-          alert('Enter a status message');
-        } else {
-          textBox.value = "";
-        }
-      });
-
-
-
-
-
-
     }
   };
 
+  $(document).ready(function() {
+    //Place listener on status post button
+    //If status message is empty, prevent submit and alert the user
+    let statusPostButton = document.getElementById('edit-post');
+
+    statusPostButton.addEventListener('click', function() {
+      let textBox = document.getElementById('edit-message');
+      console.dir(textBox);
+      comparison = textBox.value === 0;
+      console.log(comparison);
+      if (textBox.value.length === 0) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        alert('Enter a status message');
+      } else {
+        textBox.value = "";
+      }
+    });
+  });
   // let uploadButton = $('#edit-media-upload');
   // uploadButton.hide();
   // $('.status-media-upload').click(function() {
