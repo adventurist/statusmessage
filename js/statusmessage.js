@@ -74,6 +74,11 @@
     //If status message is empty, prevent submit and alert the user
     let statusPostButton = document.getElementById('edit-post');
 
+    let alertDialog = document.createElement('div');
+    alertDialog.id = 'status-dialog';
+    alertDialog.title = 'Status Alert';
+    alertDialog.innerHTML = '<p>Enter a status message</p>';
+
     statusPostButton.addEventListener('click', function() {
       let textBox = document.getElementById('edit-message');
       console.dir(textBox);
@@ -83,7 +88,8 @@
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
-        alert('Enter a status message');
+        // alert('Enter a status message');
+        $(alertDialog).dialog();
       } else {
         textBox.value = "";
       }

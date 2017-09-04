@@ -24,6 +24,9 @@
   background: #500005;
 }
 
+.ui-dialog .ui-button-text {
+  height: 100%;
+}
 
 #edit-mediatabs input[type="radio"]:checked {
   background: #003b08;
@@ -55,7 +58,8 @@
   background-size: contain;
 }
 
-#edit-media-upload {
+#edit-media-upload,
+#status-form .form-item-media, #status-form input.form-file{
   display: inline-block;
   max-width: 32px;
   min-height: 32px;
@@ -71,4 +75,14 @@
 .heartbeat-message .comment-body a.status-comment-share {
   text-decoration: none;
   color: #333;
+}
+
+.ui-dialog {
+  font-size: 90%;
+}
+
+.ui-dialog-title {
+  background-size: contain;
+  background: url('/themes/kekistan/images/icons/alert.png') no-repeat;
+  padding: 2px 2.5em;
 }
